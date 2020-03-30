@@ -2,8 +2,6 @@ import { HeroController } from './hero-controller';
 import { KeyController } from './key-controller';
 import GameModel from '../models/game-model';
 import { CameraController } from './camera-controller';
-import Vec from '../utils/vec';
-import { itemEnumConv } from '../constants';
 
 export class GameController {
 
@@ -18,7 +16,7 @@ export class GameController {
 
   init(gameModel: GameModel) {
     this._gameModel = gameModel;
-    this._gameModel.gameController = this;
+    console.log(this._gameModel);
     this.heroController = new HeroController(this);
     this.cameraController = new CameraController(this);
     this.keyController.init();

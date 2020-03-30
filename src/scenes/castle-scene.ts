@@ -7,13 +7,9 @@ import Vec from '../utils/vec';
 export class CastleScene extends BaseScene {
     public sceneObjects: PIXI.DisplayObject[];
 
-    constructor(app: PIXI.Application, gameModel: GameModel, gameController: GameController, afterTransitionCallback: (nextScene: string) => void) {
-        super(app, gameModel, gameController, afterTransitionCallback);
-    }
-
-    init() {
-      this.gameModel.init(MapType.CASTLE, new Vec(2, 4), this.app, this.mapParser.loadMap(this.resources['CASTLE_MAP_TEXT'].data), this.gameController, true, this.afterTransitionCallback);
-      this.gameController.init(this.gameModel);
+    init(app: PIXI.Application, gameModel: GameModel, afterTransitionCallback: (nextScene: string) => void) {
+        super.init(app, gameModel, afterTransitionCallback);
+        this.gameModel.loadMap(MapType.CASTLE, this.mapParser.loadMap(this.resources['CASTLE_MAP_TEXT'].data), true, new Vec(2,4));
     }
 
     update(delta: number, absolute: number) {

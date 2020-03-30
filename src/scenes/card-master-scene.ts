@@ -7,18 +7,14 @@ import Vec from '../utils/vec';
 export class CardMasterScene extends BaseScene {
     public sceneObjects: PIXI.DisplayObject[];
 
-    constructor(app: PIXI.Application, gameModel: GameModel, gameController: GameController, afterTransitionCallback: (nextScene: string) => void) {
-        super(app, gameModel, gameController, afterTransitionCallback);
-    }
-
-    init() {
-        this.gameModel.init(MapType.CARDMASTER, new Vec(1, 2), this.app, this.mapParser.loadMap(this.resources['MAP_CARDMASTER'].data), this.gameController, true, this.afterTransitionCallback);
-        this.gameController.init(this.gameModel);
+    init(app: PIXI.Application, gameModel: GameModel, afterTransitionCallback: (nextScene: string) => void) {
+        super.init(app, gameModel, afterTransitionCallback);
+        this.gameModel.loadMap(MapType.CARDMASTER, this.mapParser.loadMap(this.resources['MAP_CARDMASTER'].data), true, new Vec(1,2));
     }
 
     update(delta: number, absolute: number) {
         this.gameModel.update(delta, absolute);
-        this.gameController.update(delta, absolute);
+        this.gameModel.gameController.update(delta, absolute);
     }
 }
 

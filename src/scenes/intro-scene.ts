@@ -9,11 +9,8 @@ class IntroScene extends BaseScene {
   introModel: IntroModel;
   introController: IntroController;
 
-  constructor(app: PIXI.Application, gameModel: GameModel, gameController: GameController, afterTransitionCallback: (nextScene: string) => void) {
-    super(app, gameModel, gameController, afterTransitionCallback);
-  }
-
-  init() {
+  init(app: PIXI.Application, gameModel: GameModel, afterTransitionCallback: (nextScene: string) => void) {
+    super.init(app, gameModel, afterTransitionCallback);
     this.introController = new IntroController();
     this.introModel = new IntroModel(this.app, this.introController, this.afterTransitionCallback);
     this.introController.init(this.introModel);

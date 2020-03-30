@@ -1,36 +1,36 @@
-import BaseSceneState from "./scenes/scene-state-base";
-import BaseScene from "../scene-base";
-import CardSceneState from "./scenes/card-scene-state";
-import GameModel from "../../models/game-model";
+import BaseSceneState from './scenes/scene-state-base';
+import BaseScene from '../scene-base';
+import GameModel from '../../models/game-model';
 import IntroSceneState from './scenes/intro-scene-state';
-import { GameController } from "../../controllers/game-controller";
-import MortuaryScene from "../mortuary-scene";
+import { GameController } from '../../controllers/game-controller';
 
 class SceneManager {
     state: BaseSceneState;
     gameModel: GameModel;
     gameController: GameController;
+    app: PIXI.Application
 
-    constructor() {
-        this.gameModel = new GameModel();
-        this.gameController = new GameController();
+    constructor(gameModel: GameModel, app: PIXI.Application,) {
+        this.gameModel = gameModel;
+        this.gameController = gameModel.gameController;
+        this.app = app;
     }
 
-    initFirst(app: PIXI.Application, afterTransitionCallback: (nextScene: string) => void) {
+    initFirst(afterTransitionCallback: (nextScene: string) => void) {
         this.state = new IntroSceneState();
 
-        this.state.init(app, this.gameModel, this.gameController, afterTransitionCallback);
-        this.state.scene.init(this.gameModel);
+        let scene = this.state.getCurrentScene();
+        scene.init(this.app, this.gameModel, afterTransitionCallback);
     }
-    nextScene(sceneName: string, app: PIXI.Application, afterTransitionCallback: (nextScene: string) => void): BaseScene {
+    nextScene(sceneName: string, afterTransitionCallback: (nextScene: string) => void): BaseScene {
         this.state = this.state.transition(sceneName);
-        this.state.init(app, this.gameModel, this.gameController, afterTransitionCallback);
-        this.state.scene.init(this.gameModel);
+        let scene = this.state.getCurrentScene();
+        scene.init(this.app, this.gameModel, afterTransitionCallback);
         return this.state.scene;
     }
 
     update(delta: number, absolute: number) {
-        this.state.scene.update(delta, absolute);
+        this.state.getCurrentScene().update(delta, absolute);
     }
 }
 

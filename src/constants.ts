@@ -25,7 +25,7 @@ export enum Assets {
   BEER = 'BEER',
   DIALOG_NEXT = 'DIALOG_NEXT',
   DIALOGS = 'DIALOGS',
-  MORTUARYSCENEDIALOG = "MORTUARYSCENEDIALOG",
+  MORTUARYSCENEDIALOG = 'MORTUARYSCENEDIALOG',
   NPC_CARDMASTER = 'NPC_CARDMASTER',
   NPC_THIEF= 'NPC_THIEF',
   NPC_SYSADMIN = 'NPC_SYSADMIN',
@@ -42,10 +42,10 @@ export enum Assets {
   ITEM_NOTE = 'ITEM_NOTE',
   ITEM_PIZZA = 'ITEM_PIZZA',
   ITEM_WEED = 'ITEM_WEED',
-  MAIN_WINDOW_DIALOGUES = "MAIN_WINDOWS_DIALOUES",
+  MAIN_WINDOW_DIALOGUES = 'MAIN_WINDOWS_DIALOUES',
   MAP_CARDMASTER = 'MAP_CARDMASTER',
   MAP_CARDMASTER_TEXTURE = 'MAP_CARDMASTER_TEXTURE',
-  SELECT_TITLE = "SELECT_TITLE",
+  SELECT_TITLE = 'SELECT_TITLE',
   ORACLE = 'ORACLE',
   ORACLE_MAG_WAR = 'ORACLE_MAG_WAR',
   ORACLE_ROGUE = 'ORACLE_ROGUE',
@@ -87,31 +87,22 @@ export const getItemAsset = (index: number) => {
   switch(index) {
     case Items.BEER:
       return Assets.ITEM_BEER;
-      break;
     case Items.CAN:
       return Assets.ITEM_CAN;
-      break;
     case Items.COINS:
       return Assets.ITEM_COINS;
-      break;
     case Items.DINO:
       return Assets.ITEM_DINO;
-      break;
     case Items.EMPTY_BOX:
       return Assets.ITEM_EMPTY_BOX;
-      break;
     case Items.FLOPPY_DISK:
       return Assets.ITEM_FLOPPY_DISK;
-      break;
     case Items.NOTE:
       return Assets.ITEM_NOTE;
-      break;
     case Items.PIZZA:
         return Assets.ITEM_PIZZA;
-        break;
     case Items.WEED:
         return Assets.ITEM_WEED;
-        break;
   }
   throw new Error('Unknown NPC!');
 }
@@ -129,25 +120,18 @@ export const getNPCAsset = (index: number) => {
   switch(index) {
     case NPC_CARDMASTER:
       return Assets.NPC_CARDMASTER;
-      break;
     case NPC_THIEF:
       return Assets.NPC_THIEF;
-      break;
     case NPC_SYSADMIN:
       return Assets.NPC_SYSADMIN;
-      break;
     case NPC_HOMELESS:
       return Assets.NPC_HOMELESS;
-      break;
     case NPC_TERREX:
       return Assets.NPC_TERREX;
-      break;
     case NPC_JUNKIE:
       return Assets.NPC_JUNKIE;
-      break;
     case NPC_ECOLOGIST:
       return Assets.NPC_ECOLOGIST;
-      break;
   }
   throw new Error('Unknown NPC!');
 }

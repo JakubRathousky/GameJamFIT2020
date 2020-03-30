@@ -4,6 +4,7 @@ import SceneManager from './scenes/scenestates/scene-manager';
 import { resizeCanvas } from './utils/canvas-resizer';
 
 import { Assets, SCALE_Y, SCALE_X, NPC_SYSADMIN, NPC_TERREX, NPC_THIEF, NPC_HOMELESS } from './constants';
+import GameModel from './models/game-model';
 
 
 class Game extends PIXI.Application {
@@ -11,7 +12,7 @@ class Game extends PIXI.Application {
   gameTime = 0;
 
   public loader = new PIXI.Loader();
-  public sceneManager = new SceneManager();
+  public sceneManager: SceneManager;
 
   constructor() {
     super({
@@ -84,8 +85,12 @@ class Game extends PIXI.Application {
   }
 
   startGame() {
-    this.sceneManager = new SceneManager();
-    this.sceneManager.initFirst(this, (nextStageName) => this.clear(nextStageName));
+    let gameModel = new GameModel();
+    gameModel.init(this, (nextStageName) => this.clear(nextStageName));
+
+    this.sceneManager = new SceneManager(gameModel, this);
+
+    this.sceneManager.initFirst((nextStageName) => this.clear(nextStageName));
 
     let startScene = this.sceneManager.state.scene;
     startScene.sceneObjects.forEach(x => this.stage.addChild(x));
@@ -99,7 +104,7 @@ class Game extends PIXI.Application {
   }
 
   switchScene(sceneName: string) {
-    let scene = this.sceneManager.nextScene(sceneName, this, (nextStageName) => this.clear(nextStageName));
+    let scene = this.sceneManager.nextScene(sceneName, (nextStageName) => this.clear(nextStageName));
     scene.sceneObjects.forEach(x => this.stage.addChild(x));
   }
 

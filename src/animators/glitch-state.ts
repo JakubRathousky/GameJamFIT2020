@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { GlitchFilter, GlitchOptions } from '@pixi/filter-glitch';
+import { GlitchFilter } from '@pixi/filter-glitch';
 
 class GlitchState {
     public isActive = false;

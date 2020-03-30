@@ -69,29 +69,37 @@ export default class GameModel {
     this.dialogueHelper = new DialogueHelper();
   }
 
-  init(mapType: MapType, heroPos: Vec, app: PIXI.Application, rawMap: RawMap, gameController: GameController, initScene: boolean = true, afterTransitionCallback: (nextScene: string) => void) {
+  init(app: PIXI.Application, afterTransitionCallback: (nextScene: string) => void) {
     this.afterTransitionCallback = afterTransitionCallback;
-    this.mapType = mapType;
-    this.heroPos = heroPos;
     this.screenWidth = app.view.width;
     this.screenHeight = app.view.height;
-    this.gameController = gameController;
+
     this.stage = app.stage;
     this.root = new PIXI.Container;
     this.stage.addChild(this.root);
     this.keys = 0;
     this.root.scale.set(SCALE_X, SCALE_Y);
 
+    this.hero = new HeroModel(this);
+
+    this.gameController = new GameController();
+    this.gameController.init(this);
+    this.dialogManager = new DialogManager(this.screenWidth, this.screenHeight, this.stage, this.gameController.keyController);
+  }
+
+  loadMap(mapType: MapType, rawMap: RawMap, initScene: boolean = true, heroPos: Vec) {
+    this.mapType = mapType;
+    this.heroPos = heroPos;
     this.gameMap = new MapModel(rawMap);
 
+    if (this.heroType != null) {
+      this.hero.init();
+    }
+
     this.initScene(initScene);
-    this.hero = new HeroModel(this);
-    this.hero.init();
     if(!initScene) {
       this.root.removeChild(this.hero.pixiObj);
     }
-    this.dialogManager = new DialogManager(this.screenWidth, this.screenHeight, this.stage, this.gameController.keyController);
-
     if(mapType !== MapType.CARDMASTER && mapType !== MapType.CASTLE) {
       this.sideBarModel = new SidebarModel(this);
       this.sideBarModel.init();

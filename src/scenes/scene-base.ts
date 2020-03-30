@@ -12,16 +12,17 @@ abstract class BaseScene {
     mapParser = new MapParser();
     afterTransitionCallback: (nextScene: string) => void;
 
-    constructor(app: PIXI.Application, gameModel: GameModel, gameController: GameController, afterTransitionCallback: (nextScene: string) => void) {
+    public init(app: PIXI.Application, gameModel: GameModel, afterTransitionCallback: (nextScene: string) => void) {
+        this.initProperty(app, gameModel, afterTransitionCallback);
+    }
+    abstract update(delta: number, absolute: number);
+
+    private initProperty(app: PIXI.Application, gameModel: GameModel, afterTransitionCallback: (nextScene: string) => void) {
         this.app = app;
         this.afterTransitionCallback = afterTransitionCallback;
-        this.gameController = gameController;
+        this.gameController = gameModel.gameController;
         this.gameModel = gameModel;
     }
-
-    abstract init(gameModel: GameModel);
-
-    abstract update(delta: number, absolute: number);
 }
 
 export default BaseScene;
