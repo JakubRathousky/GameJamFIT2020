@@ -38,7 +38,7 @@ export class HeroModel extends GameObjectModel {
         texture = PIXI.Texture.from(Assets.HERO_WARRIOR);
         break;
     }
-
+    console.log(texture);
     texture = texture.clone();
     texture.frame = new PIXI.Rectangle(0, 11 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
     let sprite = new PIXI.Sprite(texture);

@@ -76,10 +76,7 @@ export default class GameModel {
     this.screenHeight = app.view.height;
 
     this.stage = app.stage;
-    this.root = new PIXI.Container;
-    this.stage.addChild(this.root);
     this.keys = 0;
-    this.root.scale.set(SCALE_X, SCALE_Y);
 
     this.hero = new HeroModel(this);
 
@@ -89,13 +86,13 @@ export default class GameModel {
   }
 
   loadMap(mapType: MapType, rawMap: RawMap, initScene: boolean = true, heroPos: Vec) {
+    this.root = new PIXI.Container;
+    this.stage.addChild(this.root);
+    this.root.scale.set(SCALE_X, SCALE_Y);
+
     this.mapType = mapType;
     this.heroPos = heroPos;
     this.gameMap.setMap(rawMap);
-
-    if (this.heroType != null) {
-      this.hero.init();
-    }
 
     this.initScene(initScene);
     if(!initScene) {
@@ -104,6 +101,9 @@ export default class GameModel {
     if(mapType !== MapType.CARDMASTER && mapType !== MapType.CASTLE) {
       this.sideBarModel = new SidebarModel(this);
       this.sideBarModel.init();
+    }
+    if (this.heroType != null) {
+      this.hero.init();
     }
   }
 
@@ -220,6 +220,7 @@ export default class GameModel {
     let texturePos = helpers.mapCellToVector(cell.defaultTexture, textureColumns);
     sprite.texture.frame = new PIXI.Rectangle(texturePos.x * BLOCK_SIZE, texturePos.y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
     sprite.position.set(pos.x * BLOCK_SIZE, pos.y * BLOCK_SIZE);
+
     if (render) {
       this.root.addChild(sprite);
     }
@@ -227,7 +228,6 @@ export default class GameModel {
   }
 
   update(delta: number, absolute: number) {
-
     if(this.glitchActive) {
       if(this.glitchTimeout == 0) {
         this.glitchTimeout = absolute + 10000;
