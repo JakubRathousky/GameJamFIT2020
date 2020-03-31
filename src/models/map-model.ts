@@ -3,8 +3,8 @@ import Vec from '../utils/vec';
 
 export class MapModel {
   rawMap: RawMap;
-
-  constructor(rawMap: RawMap) {
+  
+  setMap(rawMap: RawMap) {
     this.rawMap = rawMap;
   }
 

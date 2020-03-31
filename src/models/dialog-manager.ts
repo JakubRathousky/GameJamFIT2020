@@ -58,6 +58,8 @@ export class DialogManager {
   }
 
   displayText(text: string, onComplete: () => void, isNPC: boolean) {
+    this.dialogModel.init();
+    this.dialogModel.hide();
     this.dialogModel.showText(text, isNPC);
     this.dialogController.onDialogFinish = onComplete;
   }

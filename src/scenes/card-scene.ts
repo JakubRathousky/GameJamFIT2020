@@ -4,7 +4,6 @@ import { CardMasterSceneName } from "./scenestates/scene-names";
 import { Assets } from "../constants";
 import { KeyController, Keys } from "../controllers/key-controller";
 import GameModel, { HeroType } from "../models/game-model";
-import { GameController } from "../controllers/game-controller";
 
 class CardScene extends BaseScene {
   flickerIndex = 0;

@@ -14,6 +14,7 @@ export class HeroController {
 
   constructor(gameController: GameController) {
     this.gameController = gameController;
+    console.log(this.gameController.gameModel)
     this.heroModel = this.gameController.gameModel.hero;
     this.mapModel = this.gameController.gameModel.gameMap;
   }
@@ -24,7 +25,6 @@ export class HeroController {
     if(this.gameController.gameModel.isPaused) {
       return;
     }
-    console.log(this);
     if (this.heroModel.state === HeroState.STANDING) {
       if (this.gameController.isKeyPressed(Keys.KEY_LEFT)) {
         if(this.mapModel.canGoLeft(this.heroModel.mapPos)) {

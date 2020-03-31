@@ -16,7 +16,6 @@ export class GameController {
 
   init(gameModel: GameModel) {
     this._gameModel = gameModel;
-    console.log(this._gameModel);
     this.heroController = new HeroController(this);
     this.cameraController = new CameraController(this);
     this.keyController.init();

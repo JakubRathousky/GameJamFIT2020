@@ -67,6 +67,7 @@ export default class GameModel {
     this.itemManager = new ItemManager(this);
     this.NPCManager = new NPCManager(this);
     this.dialogueHelper = new DialogueHelper();
+    this.gameMap = new MapModel();
   }
 
   init(app: PIXI.Application, afterTransitionCallback: (nextScene: string) => void) {
@@ -90,7 +91,7 @@ export default class GameModel {
   loadMap(mapType: MapType, rawMap: RawMap, initScene: boolean = true, heroPos: Vec) {
     this.mapType = mapType;
     this.heroPos = heroPos;
-    this.gameMap = new MapModel(rawMap);
+    this.gameMap.setMap(rawMap);
 
     if (this.heroType != null) {
       this.hero.init();
