@@ -1,0 +1,55 @@
+[
+    {
+        "language": "en",
+        "texts": [
+            {
+                "key": "intro_mobile",
+                "text": "Hey yoo! Press that green thingy to interact with the dude on the right... you can also read the boards!!!"
+            },
+            {
+                "key": "intro_pc",
+                "text": "Hey yoo! Press spacebar to interact with the dude on the right... you can also read the boards!!!"
+            },
+            {
+                "key": "example_1",
+                "text": "Walters'... my house"
+            },
+            {
+                "key": "example_2",
+                "text": "My friend's house. Not sure which one was built first. Yet I think that this one's roof doesn't sit quite straight."
+            },
+            {
+                "key": "example_3",
+                "text": "KEEP OFF THE GRASS....  hahahah haahahahah hahahaha, for sure."
+            },
+            {
+                "key": "example_4",
+                "text": "LAB. This is a house where all the mighty experiment take place. One day I will have a lab on my own."
+            },
+            {
+                "key": "dude_text_idle",
+                "text": "Well lad! How's she cutting?"
+            },
+            {
+                "key": "dude_text_1",
+                "text": "Ah whist, will ya? Look at those flowers. Magnificent, isn't it?"
+            },
+            {
+                "key": "dude_text_2",
+                "text": "I’ve begun my voyage in a paper boat without a bottom, I will fly to the moon in it. I’ve been folded along a creasing time, a weakness in the sheet of life. Now you’ve settled on the opposite side of the paper to me."
+            },
+            {
+                "key": "dude_text_3",
+                "text": "Yep, this place was the very essence of fuckery. It leaked off every dollar they put into it, and it sickened me!"
+            },
+            {
+                "key": "dude_text_4",
+                "text": "Are you happy bothering me all the time?"
+            },
+            {
+                "key": "dude_text_5",
+                "text": "There is nothing to tell... go to hell"
+            }
+        ]
+    }
+]

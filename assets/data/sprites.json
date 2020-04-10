@@ -1,0 +1,230 @@
+{
+    "items": [
+        {
+            "name": "dialogFrame",
+            "spriteset": "items",
+            "sprites": [
+                {
+                    "name": "default",
+                    "offsetX": 8,
+                    "offsetY": 0,
+                    "width": 38,
+                    "height": 21
+                }
+            ]
+        },
+        {
+            "name": "dialogHint",
+            "spriteset": "items",
+            "sprites": [
+                {
+                    "name": "default",
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "width": 7,
+                    "height": 7
+                }
+            ]
+        }
+    ],
+    "persons": [
+        {
+            "name": "dude",
+            "spriteset": "dude",
+            "sprites": [
+                {
+                    "name": "default",
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "width": 17,
+                    "height": 20,
+                    "animations": [
+                        {
+                            "name": "stand",
+                            "sequence": {
+                                "front": [{
+                                    "posX": 0,
+                                    "posY": 0,
+                                    "shiftY": 3
+                                }],
+                                "back": [{
+                                    "posX": 17,
+                                    "posY": 0,
+                                    "shiftY": 3
+                                }],
+                                "side": [{
+                                    "posX": 34,
+                                    "posY": 0,
+                                    "shiftY": 3
+                                }]
+                            }
+                        },
+                        {
+                            "name": "walk",
+                            "sequence": {
+                                "front": [
+                                    {
+                                        "posX": 51,
+                                        "posY": 0,
+                                        "shiftY": 3
+                                    },
+                                    {
+                                        "posX": 51,
+                                        "posY": 0,
+                                        "shiftY": 3,
+                                        "scaleX": -1
+                                    }
+                                ],
+                                "back": [
+                                    {
+                                        "posX": 68,
+                                        "posY": 0,
+                                        "shiftY": 3
+                                    },
+                                    {
+                                        "posX": 68,
+                                        "posY": 0,
+                                        "shiftY": 3,
+                                        "scaleX": -1
+                                    }
+                                ],
+                                "side": [
+                                    {
+                                        "posX": 85,
+                                        "posY": 0,
+                                        "shiftY": 3
+                                    },
+                                    {
+                                        "posX": 102,
+                                        "posY": 0,
+                                        "shiftY": 3
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "player",
+            "spriteset": "player",
+            "sprites": [
+                {
+                    "name": "default",
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "width": 14,
+                    "height": 21,
+                    "animations": [
+                        {
+                            "name": "stand",
+                            "sequence": {
+                                "front": [{
+                                    "posX": 0,
+                                    "posY": 0
+                                }],
+                                "back": [{
+                                    "posX": 15,
+                                    "posY": 0
+                                }],
+                                "side": [{
+                                    "posX": 30,
+                                    "posY": 0
+                                }]
+                            }
+                        },
+                        {
+                            "name": "walk",
+                            "sequence": {
+                                "front": [
+                                    {
+                                        "posX": 0,
+                                        "posY": 22,
+                                        "shiftY": 1
+                                    },
+                                    {
+                                        "posX": 0,
+                                        "posY": 44,
+                                        "shiftY": 1
+                                    }
+                                ],
+                                "back": [
+                                    {
+                                        "posX": 15,
+                                        "posY": 22,
+                                        "shiftY": 1
+                                    },
+                                    {
+                                        "posX": 15,
+                                        "posY": 44,
+                                        "shiftY": 1
+                                    }
+                                ],
+                                "side": [
+                                    {
+                                        "posX": 31,
+                                        "posY": 22,
+                                        "shiftY": 1
+                                    },
+                                    {
+                                        "posX": 30,
+                                        "posY": 44,
+                                        "shiftY": 1
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "run",
+                            "sequence": {
+                                "front": [
+                                    {
+                                        "posX": 0,
+                                        "posY": 66
+                                    },
+                                    {
+                                        "posX": 0,
+                                        "posY": 86
+                                    },
+                                    {
+                                        "posX": 0,
+                                        "posY": 106
+                                    }
+                                ],
+                                "back": [
+                                    {
+                                        "posX": 15,
+                                        "posY": 66
+                                    },
+                                    {
+                                        "posX": 16,
+                                        "posY": 86
+                                    },
+                                    {
+                                        "posX": 16,
+                                        "posY": 107
+                                    }
+                                ],
+                                "side": [
+                                    {
+                                        "posX": 30,
+                                        "posY": 65
+                                    },
+                                    {
+                                        "posX": 31,
+                                        "posY": 86
+                                    },
+                                    {
+                                        "posX": 31,
+                                        "posY": 107
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

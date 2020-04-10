@@ -1,19 +1,25 @@
 {
-  "name": "fit-game",
+  "name": "cycle_of_life",
+  "author": "Adam Vesecky",
   "scripts": {
-    "start": "node ./deploy.js && tsc --noEmit && parcel view/index.html --out-dir build",
-    "deploy": "tsc --noEmit && parcel build view/index.html --out-dir build --no-cache --no-source-maps",
-    "lint": "tslint --project tslint.json"
+    "start": "node scripts/deploy.js && tsc --noEmit && parcel templates/*.html templates/*.pug --out-dir build",
+    "clean": "node scripts/clean.js",
+    "deploy": "node scripts/deploy.js && tsc --noEmit && parcel build templates/*.html templates/*.pug --out-dir build --no-cache --no-source-maps",
+    "parse-map": "node scripts/parse-map ./assets/tileset_interior.png ./maps/houseB_2.png ./maps/houseB_2.txt",
+    "lint": "eslint -c .eslintrc.js --ext .ts ."
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.3",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
+    "eslint": "^6.8.0",
+    "parcel-bundler": "^1.12.4",
     "parcel-plugin-json-url-loader": "^0.1.2",
-    "tslint": "^5.20.0",
-    "typescript": "^3.6.3"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@pixi/filter-glitch": "^3.0.3",
+    "jimp": "^0.10.0",
     "pixi-sound": "^3.0.4",
-    "pixi.js": "^5.1.3"
+    "pixi.js": "^5.2.1"
   }
 }

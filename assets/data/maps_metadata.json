@@ -1,0 +1,235 @@
+[
+    {
+        "name" : "town",
+        "tileset": "exterior",
+        "playerPos": [14, 10],
+        "npcs": [
+            {
+                "name": "dude",
+                "position": [19, 13],
+                "behavior": "DudeBehavior",
+                "trigger": "DudeTrigger"
+            }
+        ],
+        "staticTriggers": [
+            {
+                "name": "door",
+                "position": [10, 9],
+                "condition": "try_to_enter_area",
+                "direction": "top",
+                "props": {
+                    "targetMap": "houseA_1",
+                    "targetPosition": [8, 8],
+                    "animate": true
+                }
+            },
+            {
+                "name": "door",
+                "position": [19, 9],
+                "condition": "try_to_enter_area",
+                "direction": "top",
+                "props": {
+                    "targetMap": "houseB_1",
+                    "targetPosition": [1, 8],
+                    "animate": true
+                }
+            },
+            {
+                "name": "door",
+                "position": [12, 17],
+                "condition": "try_to_enter_area",
+                "direction": "top",
+                "props": {
+                    "targetMap": "lab",
+                    "targetPosition": [6, 12],
+                    "animate": true
+                }
+            },
+            {
+                "name": "info",
+                "position": [12, 9],
+                "condition": "try_to_interact",
+                "direction": "top",
+                "props": {
+                    "textKey": "example_1"
+                }
+            },
+            {
+                "name": "info",
+                "position": [17, 9],
+                "condition": "try_to_interact",
+                "direction": "top",
+                "props": {
+                    "textKey": "example_2"
+                }
+            },
+            {
+                "name": "info",
+                "position": [20, 14],
+                "condition": "try_to_interact",
+                "direction": "top",
+                "props": {
+                    "textKey": "example_3"
+                }
+            },
+            {
+                "name": "info",
+                "position": [11, 18],
+                "condition": "try_to_interact",
+                "direction": "top",
+                "props": {
+                    "textKey": "example_4"
+                }
+            }
+        ]
+    },
+    {
+        "name" : "lab",
+        "tileset": "interior",
+        "playerPos": [6, 12],
+        "staticTriggers": [
+            {
+                "name": "door",
+                "position": [6, 12],
+                "condition": "try_to_leave_area",
+                "direction": "bottom",
+                "props": {
+                    "targetMap": "town",
+                    "targetPosition": [12, 18],
+                    "animate": false
+                }
+            },
+            {
+                "name": "door",
+                "position": [7, 12],
+                "condition": "try_to_leave_area",
+                "direction": "bottom",
+                "props": {
+                    "targetMap": "town",
+                    "targetPosition": [12, 18],
+                    "animate": false
+                }
+            }
+        ]
+    },
+    {
+        "name" : "houseA_1",
+        "tileset": "interior",
+        "playerPos": [8, 8],
+        "staticTriggers": [
+            {
+                "name": "door",
+                "position": [8, 8],
+                "condition": "try_to_leave_area",
+                "direction": "bottom",
+                "props": {
+                    "targetMap": "town",
+                    "targetPosition": [10, 10],
+                    "animate": false
+                }
+            },
+            {
+                "name": "door",
+                "position": [9, 8],
+                "condition": "try_to_leave_area",
+                "direction": "bottom",
+                "props": {
+                    "targetMap": "town",
+                    "targetPosition": [10, 10],
+                    "animate": false
+                }
+            },
+            {
+                "name": "door",
+                "position": [8, 2],
+                "condition": "try_to_enter_area",
+                "direction": "top",
+                "props": {
+                    "targetMap": "houseA_2",
+                    "targetPosition": [7, 2],
+                    "animate": false,
+                    "targetDirection": "down"
+                }
+            }
+        ]
+    },
+    {
+        "name" : "houseA_2",
+        "tileset": "interior",
+        "playerPos": [7, 1],
+        "staticTriggers": [
+            {
+                "name": "door",
+                "position": [7, 1],
+                "condition": "try_to_enter_area",
+                "direction": "top",
+                "props": {
+                    "targetMap": "houseA_1",
+                    "targetPosition": [8, 3],
+                    "animate": false,
+                    "targetDirection": "down"
+                }
+            }
+        ]
+    },
+    {
+        "name" : "houseB_1",
+        "tileset": "interior",
+        "playerPos": [1, 8],
+        "staticTriggers": [
+            {
+                "name": "door",
+                "position": [1, 8],
+                "condition": "try_to_leave_area",
+                "direction": "bottom",
+                "props": {
+                    "targetMap": "town",
+                    "targetPosition": [19, 10],
+                    "animate": false
+                }
+            },
+            {
+                "name": "door",
+                "position": [2, 8],
+                "condition": "try_to_leave_area",
+                "direction": "bottom",
+                "props": {
+                    "targetMap": "town",
+                    "targetPosition": [19, 10],
+                    "animate": false
+                }
+            },
+            {
+                "name": "door",
+                "position": [2, 2],
+                "condition": "try_to_enter_area",
+                "direction": "top",
+                "props": {
+                    "targetMap": "houseB_2",
+                    "targetPosition": [1, 2],
+                    "animate": false,
+                    "targetDirection": "down"
+                }
+            }
+        ]
+    },
+    {
+        "name" : "houseB_2",
+        "tileset": "interior",
+        "playerPos": [1, 1],
+        "staticTriggers": [
+            {
+                "name": "door",
+                "position": [1, 1],
+                "condition": "try_to_enter_area",
+                "direction": "top",
+                "props": {
+                    "targetMap": "houseB_1",
+                    "targetPosition": [2, 3],
+                    "animate": false,
+                    "targetDirection": "down"
+                }
+            }
+        ]
+    }
+]

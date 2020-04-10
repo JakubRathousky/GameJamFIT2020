@@ -1,0 +1,67 @@
+{
+    "tileSets" : [
+        {
+            "name": "exterior",
+            "path": "./assets/graphics/tileset_exterior.png",
+            "walkable": [1, 4, 17, 3504, 3505, 3506, 3505],
+            "animated": [
+                {
+                    "name": "flowers",
+                    "index": 3504,
+                    "sequence": [3504, 3505, 3506, 3505],
+                    "automatic": true
+                },
+                {
+                    "name": "door_brown_up",
+                    "index": 3592,
+                    "sequence": [3592, 3593, 3594, 3595],
+                    "automatic": false
+                },
+                {
+                    "name": "door_brown_down",
+                    "index": 3680,
+                    "sequence": [3680, 3681, 3682, 3683],
+                    "automatic": false
+                },
+                {
+                    "name": "door_green_up",
+                    "index": 3768,
+                    "sequence": [3768, 3769, 3770, 3771],
+                    "automatic": false
+                },
+                {
+                    "name": "door_green_down",
+                    "index": 3856,
+                    "sequence": [3856, 3857, 3858, 3859],
+                    "automatic": false
+                }
+            ],
+            "tileSize": 16
+        },
+        {
+            "name": "interior",
+            "path": "./assets/graphics/tileset_interior.png",
+            "walkable": [6153,6156, 7113, 7112, 6728, 3156, 6157, 8460, 6157, 6159, 6154, 6155, 
+                9800, 9801, 9802, 6728, 9993, 6733, 7112, 7113, 7117, 6733, 7117, 7309, 
+                6158, 9033, 9032, 7883, 7694, 10571, 10376, 10568, 9995, 10187, 10188, 10189, 
+                9997, 10378, 10377, 10379, 10568, 10376, 7310, 7118, 7690, 7880, 7881, 7882, 8459, 8462, 8269, 9037, 9036, 9035, 9227, 9419, 9421, 9229,
+            7693, 9803, 9804, 9805, 9996, 9224, 8463, 8456, 9416, 9608, 9418, 6146, 6151, 7495, 7879, 6148, 7493, 7494, 7495, 9602,
+        6918, 7687, 6534, 6915, 6914, 6150],
+            "tileSize": 16
+        }
+    ],
+    "spriteAtlases": [
+        {
+            "name": "player",
+            "path": "./assets/graphics/player.png"
+        },
+        {
+            "name": "dude",
+            "path": "./assets/graphics/dude.png"
+        },
+        {
+            "name": "items",
+            "path": "./assets/graphics/items.png"
+        }
+    ]
+}

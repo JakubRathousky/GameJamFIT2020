@@ -1,8 +1,0 @@
-beer
-can
-coins
-empty_box
-floppy_disk
-pizza
-weed
-note
