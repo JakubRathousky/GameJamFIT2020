@@ -2,13 +2,17 @@
 import * as ECSA from '../../../libs/pixi-component';
 import { BaseComponent } from '../base-component';
 
-export interface WalkAnimProps {
+export interface MoveAnimProps {
     mapPosition: ECSA.Vector;
     direction: ECSA.Vector;
     tileSize: number;
+    speed: number;
 }
 
-export class WalkAnim extends BaseComponent<WalkAnimProps> {
+/**
+ * A simple animation that moves objects between tiles
+ */
+export class MoveAnim extends BaseComponent<MoveAnimProps> {
 
     private targetPosition: ECSA.Vector;
     private targetMapPosition: ECSA.Vector;
@@ -28,7 +32,7 @@ export class WalkAnim extends BaseComponent<WalkAnimProps> {
     }
 
     onUpdate(delta: number) {
-        this._progress += delta * 0.003;
+        this._progress += delta * 0.001 * this.props.speed;
 
         if(this._progress >= 1) {
             this._progress = 1;

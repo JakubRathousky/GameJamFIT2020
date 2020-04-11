@@ -8,6 +8,7 @@ export class FontTransformer {
 
         for(let font of fontData) {
             const texture = PIXI.BaseTexture.from(font.name);
+            // font is proportional, yet each letter has a constant size in the spritesheet
             const lettersPerRow = Math.floor(texture.width / font.defaultWidth);
             const chars = new Map<string, RawCharData>();
 

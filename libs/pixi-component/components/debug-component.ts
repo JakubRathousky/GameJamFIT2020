@@ -7,8 +7,14 @@ import Message from '../engine/message';
  * Debugging component that display a scene graph
  */
 export default class DebugComponent extends Component<void> {
+    discaredMessages: string[] = [Messages.COMPONENT_ADDED, Messages.COMPONENT_REMOVED, Messages.OBJECT_ADDED,
+        Messages.OBJECT_REMOVED, Messages.STATE_CHANGED, Messages.OBJECT_DESTROYED,
+        Messages.ATTRIBUTE_CHANGED, Messages.ATTRIBUTE_REMOVED];
+    displayProps = true;
+
     protected debugElement: HTMLElement = null;
     protected msgElement: HTMLElement = null;
+
 
     onInit() {
         this.initDebugWindow();
@@ -19,8 +25,7 @@ export default class DebugComponent extends Component<void> {
     onMessage(msg: Message) {
 
         // discared common messages from the log
-        if ([Messages.COMPONENT_ADDED, Messages.COMPONENT_REMOVED, Messages.OBJECT_ADDED, Messages.OBJECT_REMOVED]
-            .indexOf(msg.action as any) === -1) {
+        if (this.discaredMessages.indexOf(msg.action as any) === -1) {
             let row = document.createElement('tr');
             let cell1 = document.createElement('td');
             let cell2 = document.createElement('td');
@@ -39,6 +44,7 @@ export default class DebugComponent extends Component<void> {
             row.appendChild(cell3);
             row.appendChild(cell4);
             this.msgElement.insertBefore(row, this.msgElement.childNodes[0]);
+            this.msgElement.scrollTo(0, 0);
         }
 
         if (msg.action === Messages.OBJECT_ADDED) {
@@ -117,7 +123,7 @@ export default class DebugComponent extends Component<void> {
         cmpSection.appendChild(cmpList);
         cmpList.appendChild(compNode);
         compNode.innerText = cmp.id + ':' + cmp.name;
-        if (cmp.props) {
+        if (cmp.props && this.displayProps) {
             try {
                 const propsStr = JSON.stringify(cmp.props);
                 let propsList = document.createElement('ul');
@@ -167,6 +173,10 @@ export default class DebugComponent extends Component<void> {
             debugContainer.style.display = 'inline';
             document.getElementsByTagName('body')[0].appendChild(debugContainer);
         }
+
+        // prevent key down as we don't want to scroll while playing the game
+        document.onkeydown = (evt) => evt.preventDefault();
+
         let debugElem = document.getElementById('debug');
         if (!debugElem) {
             debugElem = document.createElement('div');

@@ -16,7 +16,7 @@ class Game {
         {
             width: 1000,
             height: 600,
-            resolution: 3,
+            resolution: 3, // pixel-art scale
             resizeToScreen: true,
             flagsSearchEnabled: false, // searching by flags feature
             statesSearchEnabled: false, // searching by states feature
@@ -29,6 +29,7 @@ class Game {
             debugEnabled: false // debugging window
         });
 
+        // pixel-perfect scaling
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         PIXI.settings.ANISOTROPIC_LEVEL = 0;
         PIXI.settings.ROUND_PIXELS = true;

@@ -31,7 +31,7 @@ const build = (mapCtrl: MapController, resources: ResourceStorage, scene: ECSA.S
                 tile.asSprite().tint = cell.walkableCode !== 0 ? 0xCCFFCC : 0xFFCCCC;
             }
 
-            // check animation
+            // inject animation
             const anim = mapCtrl.getAnimatedTileByTileIndex(cell.tileSetIndex);
             if (anim && anim.automatic) {
                 tile.addComponent(new TileAnimator({ tile: anim, tileSet: mapCtrl.tileSet }));

@@ -1,17 +1,29 @@
 
 import * as ECSA from '../../../libs/pixi-component';
-import { PersonState, Messages } from '../../entities/constants';
+import { Messages } from '../../entities/constants';
 import { BaseComponent } from '../base-component';
-import { WalkAnim } from '../animations/walk-anim';
-import AsyncComponent from '../../../libs/pixi-component/components/async-component';
 import { MapController } from './map-controller';
 import { mapControllerSelector } from '../../services/selectors';
+import { walkingAction } from '../../actions/walk';
+import ChainComponent from '../../../libs/pixi-component/components/chain-component';
+
+export enum PersonState {
+    STANDING = 1,
+    TRYING_TO_WALK = 2,
+    WALKING = 3,
+    TRYING_TO_INTERACT = 4,
+    INTERACTING = 5,
+    CUTSCENE = 6,
+}
 
 export interface PersonControllerProps {
     initPosition: ECSA.Vector;
     initDirection: ECSA.Vector;
 }
 
+/**
+ * Base controller of moving objects, mainly the player and NPCs
+ */
 export class PersonController extends BaseComponent<PersonControllerProps> {
     protected _nextPosition: ECSA.Vector;
     protected _direction: ECSA.Vector;
@@ -23,11 +35,11 @@ export class PersonController extends BaseComponent<PersonControllerProps> {
         this.mapController = mapControllerSelector(this.scene);
         this.mapPosition = this.props.initPosition;
         this.direction = this.props.initDirection;
+        this.setState(PersonState.STANDING);
     }
 
     onAttach() {
         this.mapController = mapControllerSelector(this.scene);
-        this.setState(PersonState.STANDING);
     }
 
     get direction() {
@@ -89,21 +101,34 @@ export class PersonController extends BaseComponent<PersonControllerProps> {
         this.mapController.setCellOccupied(this.mapPosition, true);
     }
 
-    performWalk(direction: ECSA.Vector, skipCheck = false): AsyncComponent<any> {
+    performWalk(direction: ECSA.Vector, force = false): ChainComponent {
         this.prepareForWalking(direction);
 
-        if(skipCheck || this.state === PersonState.TRYING_TO_WALK) {
-            const cmp = new AsyncComponent(function*(cmp) {
-                const { thiz } = cmp.props;
-                thiz.startWalking(direction);
-                yield cmp.addComponentAndWait(new WalkAnim({mapPosition: thiz.mapPosition, direction, tileSize: thiz.mapController.tileSize}));
-                thiz.finishWalking();
-            }, {thiz: this});
-
-            this.owner.addComponentAndRun(cmp);
-            return cmp;
+        if(force || this.state === PersonState.TRYING_TO_WALK) {
+            return walkingAction(this, this.mapPosition, this.direction, this.mapController.tileSize, this.resourceStorage.gameConfig.playerWalkSpeed);
         }
         return null;
+    }
+
+    startWalking(direction: ECSA.Vector) {
+        // we need to occupy two cells at once
+        this._nextPosition = this.mapPosition.add(direction);
+        this.direction = direction;
+        this.owner.stateId = PersonState.WALKING;
+        this.mapController.setCellOccupied(this._nextPosition, true);
+    }
+
+    finishWalking() {
+        // clean up occupied cells and set the new state
+        if(!this._nextPosition) {
+            throw new Error('Next position is not defined');
+        }
+        // deallocate visited mapcell
+        this.mapController.setCellOccupied(this.mapPosition, false);
+        this.teleport(this._nextPosition);
+        this._nextPosition = null;
+        this.owner.stateId = PersonState.STANDING;
+        this.sendMessage(Messages.WALK_STEP_FINISHED);
     }
 
     private prepareForWalking(direction: ECSA.Vector) {
@@ -111,30 +136,12 @@ export class PersonController extends BaseComponent<PersonControllerProps> {
             this._nextPosition = this.mapPosition.add(direction);
             this.direction = direction;
             this.setState(PersonState.TRYING_TO_WALK); // this should invoke trigger
-            if((this.state as any) === PersonState.TRYING_TO_WALK) {
+            if((this.state as any) === PersonState.TRYING_TO_WALK) { // nobody has changed our state -> we are good to go
                 const canWalk = this.isWalkable(direction);
                 if(!canWalk) {
                     this.owner.stateId = PersonState.STANDING;
                 }
             }
         }
-    }
-
-    private startWalking(direction: ECSA.Vector) {
-        this._nextPosition = this.mapPosition.add(direction);
-        this.direction = direction;
-        this.owner.stateId = PersonState.WALKING;
-        this.mapController.setCellOccupied(this._nextPosition, true);
-    }
-
-    private finishWalking() {
-        if(!this._nextPosition) {
-            throw new Error('Next position is not defined');
-        }
-        // deallocate visited mapcell
-        this.mapController.setCellOccupied(this.mapPosition, false);
-        this.mapPosition = this._nextPosition.clone();
-        this._nextPosition = null;
-        this.setState(PersonState.STANDING);
     }
 }

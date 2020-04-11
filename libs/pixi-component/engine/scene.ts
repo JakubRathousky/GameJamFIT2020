@@ -330,6 +330,7 @@ export default class Scene {
             for (let [, component] of gameObj._proxy.rawComponents) {
                 if (component.isRunning) {
                     component._isFinished = true;
+                    component.onDetach();
                     component.onFinish();
                 }
                 component.onRemove();
@@ -506,6 +507,10 @@ export default class Scene {
         if (!this.componentNotifyDisabled) {
             this.sendMessage(new Message(Messages.COMPONENT_ADDED, component, obj.pixiObj));
         }
+    }
+
+    _onComponentDetached(component: Component<any>) {
+        this.subscribers.removeItem(component);
     }
 
     _onComponentRemoved(component: Component<any>, obj: GameObjectProxy) {

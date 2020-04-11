@@ -1,5 +1,10 @@
 {
     "defaultFont": "gba",
     "defaultLanguage": "en",
-    "defaultMap": "town"
+    "defaultMap": "town",
+    "playerWalkSpeed": 3,
+    "NPCWalkSpeed" : 2,
+    "dialogHeight" : 42,
+    "dialogTextMargin" : 8,
+    "dialogLetterSpacing" : 0
 }

@@ -1,9 +1,10 @@
 import { BaseComponent } from '../base-component';
-import { KeyInputComponent, Keys } from '../../../libs/pixi-component/components/key-input-component';
+import { KeyInputComponent } from '../../../libs/pixi-component/components/key-input-component';
 import * as ECSA from '../../../libs/pixi-component';
 import { GenericComponent } from '../../../libs/pixi-component/components/generic-component';
 import { Font } from '../../entities/functional/font';
-import { Items } from '../../entities/constants';
+import { Items, InputActions, keyboadMapping } from '../../entities/constants';
+import { RawGameConfig } from '../../entities/parsed/game-config';
 
 export enum DialogState {
     ANIMATING,
@@ -11,10 +12,6 @@ export enum DialogState {
     FINISHED
 }
 
-const dialogHeight = 42;
-const dialogTextMargin = 8;
-const letterSpacing = 0;
-const maxRowsVisible = 2;
 
 interface DialogModelProps {
     font: Font;
@@ -42,9 +39,6 @@ class DialogModel {
 
     constructor(props: DialogModelProps) {
         this.props = props;
-    }
-
-    init() {
         this.wrappedText = this.wrapText(this.props.originalText, this.props.dialogWidth, this.props.letterSpacing);
         this.splitText = this.wrappedText.split('\n');
         this.rowsNum = this.splitText.length;
@@ -53,12 +47,21 @@ class DialogModel {
         this.calcVisibleText();
     }
 
-    animateVisibleText(speed: number) {
-        this._displayedText = this.visibleText.substr(0, Math.min(this._displayedText.length + speed, this.visibleText.length));
+    get displayedText() {
+        return this._displayedText;
     }
 
-    isFullyVisible() {
-        return this.displayedText.length === this.visibleText.length;
+    canShowNewLetters() {
+        return this.displayedText.length < this.visibleText.length;
+    }
+
+    showNewLetters(letterNum: number) {
+        if(this.canShowNewLetters()) {
+            letterNum = Math.min(letterNum, this.visibleText.length - this._displayedText.length);
+            this._displayedText = this.visibleText.substr(0, this._displayedText.length + letterNum);
+            return this._displayedText.substring(this._displayedText.length - letterNum);
+        }
+        return null;
     }
 
     canShowNewLines() {
@@ -75,10 +78,6 @@ class DialogModel {
         return false;
     }
 
-    get displayedText() {
-        return this._displayedText;
-    }
-
     calcVisibleText() {
         const visibleRowsNum = Math.max(this.props.maxRowsVisible, (this.currentRow + this.props.maxRowsVisible) - this.splitText.length);
         this.visibleText = this.splitText.slice(this.currentRow, this.currentRow + visibleRowsNum).join('\n');
@@ -92,6 +91,7 @@ class DialogModel {
         let currentLine = '';
         let lineLength = 0;
 
+        // we need to get the width of each letter as it may vary
         for (let word of words) {
             const wordLength = this.props.font.calcWordLength(word, letterSpacing);
             if ((lineLength + wordLength) > maxWidth) {
@@ -120,113 +120,122 @@ class DialogModel {
 export interface DialogControllerProps {
     text: string;
     fontName: string;
+    gameConfig: RawGameConfig;
 }
 
+/**
+ * Controller that displays a dialog panel and animates the text
+ */
 export class DialogController extends BaseComponent<DialogControllerProps> {
 
-    font: Font;
-    fontTexture: PIXI.Texture;
-    hintTexture: PIXI.Texture;
-    dialogWidth: number;
+    private font: Font;
+    private fontTexture: PIXI.Texture;
+    private hintTexture: PIXI.Texture;
 
-    state: DialogState;
-    model: DialogModel;
-    dialog: PIXI.Container;
+    private state: DialogState;
+    private model: DialogModel;
+    private dialog: ECSA.Container;
+    private keyInputCmp: KeyInputComponent;
 
-    keyInputCmp: KeyInputComponent;
+    private currentOffsetX = 0;
+    private currentRow = 0;
+
 
     onInit() {
         super.onInit();
         const { text, fontName } = this.props;
-        this.dialogWidth = this.scene.width;
-        this.font = this.resourceStorage.getFont(fontName);
+        const { dialogHeight, dialogTextMargin, dialogLetterSpacing } = this.props.gameConfig;
 
+        this.font = this.resourceStorage.getFont(fontName);
         this.fontTexture = new PIXI.Texture(this.resourceStorage.getFontTexture(this.font.name));
         this.hintTexture = this.resourceStorage.createItemTexture(Items.DIALOG_HINT);
 
         this.dialog = new ECSA.NineSlicePlane('dialog_plane', this.resourceStorage.createItemTexture(Items.DIALOG_FRAME), 18, 10, 18, 10);
-        this.dialog.width = this.scene.width;
+        this.dialog.width = this.scene.width; // cover the whole scene
         this.dialog.height = dialogHeight;
-        this.dialog.position.y = this.scene.height - dialogHeight - 5;
+        this.dialog.position.y = this.scene.height - dialogHeight - 5; // show it 5 pixels from the bottom
         this.scene.stage.addChild(this.dialog);
         this.keyInputCmp = this.scene.findGlobalComponentByName(KeyInputComponent.name);
         this.state = DialogState.ANIMATING;
 
-        this.model = new DialogModel({ font: this.font, originalText: text, dialogWidth: (this.dialogWidth - 2 * dialogTextMargin), letterSpacing, maxRowsVisible });
-        this.model.init();
-    }
-
-    showMore() {
-        if (this.model.canShowNewLines()) {
-            this.model.showNewLines();
-            this.state = DialogState.ANIMATING;
-        } else {
-            this.state = DialogState.FINISHED;
-            this.dialog.destroy();
-            this.finish();
-        }
+        const maxRowsVisible = Math.floor((dialogHeight - dialogTextMargin) / this.font.charDefaultHeight);
+        this.model = new DialogModel({ font: this.font, originalText: text,
+            dialogWidth: (this.scene.width - 2 * dialogTextMargin), letterSpacing: dialogLetterSpacing, maxRowsVisible });
     }
 
     onUpdate() {
-        if (this.state === DialogState.WAITING_FOR_INPUT && this.keyInputCmp.isKeyPressed(Keys.KEY_SPACE)) {
-            this.keyInputCmp.handleKey(Keys.KEY_SPACE);
-            this.showMore();
+        if (this.state === DialogState.WAITING_FOR_INPUT && this.keyInputCmp.isKeyPressed(keyboadMapping[InputActions.ACTION_INTERACT])) {
+            this.keyInputCmp.handleKey(keyboadMapping[InputActions.ACTION_INTERACT]);
+            if (this.model.canShowNewLines()) {
+                this.displayNewLines();
+            } else {
+                this.state = DialogState.FINISHED;
+                this.dialog.destroy();
+                this.finish();
+            }
         }
 
         if (this.state === DialogState.ANIMATING) {
-            if (this.keyInputCmp.isHandledKeyPressed(Keys.KEY_SPACE)) {
-                this.keyInputCmp.handleKey(Keys.KEY_SPACE);
-                this.model.animateVisibleText(2);
+            let newLettersNum = 0;
+            if (this.keyInputCmp.isHandledKeyPressed(keyboadMapping[InputActions.ACTION_INTERACT])) {
+                this.keyInputCmp.handleKey(keyboadMapping[InputActions.ACTION_INTERACT]);
+                newLettersNum =2; // if the key is pressed, animate with a higher speed
             } else {
-                this.model.animateVisibleText(1);
+                newLettersNum = 1; // show 1 new letter each frame
             }
 
-            this.displayText();
+            const newLetters = this.model.showNewLetters(newLettersNum);
+            this.displayNewLetters(newLetters);
 
-            if (this.model.isFullyVisible()) {
+            if (!this.model.canShowNewLetters()) {
+                // wait until the player has pressed a button
                 this.state = DialogState.WAITING_FOR_INPUT;
             }
         }
     }
 
-    private displayText() {
-        this.dialog.removeChildren();
-        let rowCounter = 0;
-        let offsetX = 0;
-
-        for (let char of this.model.displayedText) {
+    private displayNewLetters(letters: string) {
+        for (let char of letters) {
             if (char === '\n') {
-                offsetX = 0;
-                rowCounter++;
+                this.currentOffsetX = 0;
+                this.currentRow++;
                 continue;
             }
 
             const letter = this.font.getChar(char);
             const txt = this.fontTexture.clone();
             const spr = new PIXI.Sprite(txt);
-            spr.position.x = dialogTextMargin + offsetX + letter.offsetX;
-            spr.position.y = dialogTextMargin + rowCounter * (this.font.charDefaultHeight + 1) + letter.offsetY;
+            spr.position.x = this.props.gameConfig.dialogTextMargin + this.currentOffsetX + letter.offsetX;
+            spr.position.y = this.props.gameConfig.dialogTextMargin + this.currentRow * (this.font.charDefaultHeight + 1) + letter.offsetY;
 
             txt.frame = this.font.getCharRectangle(char);
             this.dialog.addChild(spr);
 
-            offsetX += (letter.width + letterSpacing);
+            this.currentOffsetX += (letter.width + this.props.gameConfig.dialogLetterSpacing);
         }
 
-        if (this.model.isFullyVisible() && this.model.canShowNewLines()) {
+        if (!this.model.canShowNewLetters() && this.model.canShowNewLines()) {
             // display animated hint
-            this.displayDialogHint(offsetX, rowCounter);
+            this.displayDialogHint();
         }
     }
+    private displayNewLines() {
+        this.model.showNewLines();
+        this.state = DialogState.ANIMATING;
+        this.dialog.destroyChildren();
+        this.currentOffsetX = 0;
+        this.currentRow = 0;
+    }
 
-    private displayDialogHint(offsetX: number, row: number) {
-        const spr = new ECSA.Sprite('hint', this.hintTexture);
+    private displayDialogHint() {
+        const spr = new ECSA.Sprite('hint', this.hintTexture.clone());
         spr.texture.frame = new PIXI.Rectangle(0, 0, 7, 7);
-        spr.position.x = dialogTextMargin + offsetX;
-        spr.position.y = dialogTextMargin + row * (this.font.charDefaultHeight + 1);
+        spr.position.x = this.props.gameConfig.dialogTextMargin + this.currentOffsetX;
+        spr.position.y = this.props.gameConfig.dialogTextMargin + this.currentRow * (this.font.charDefaultHeight + 1);
         this.dialog.addChild(spr);
 
         const initPos = spr.position.y;
+        // add flickering animation
         spr.addComponent(new GenericComponent('animator').setFixedFrequency(10).doOnFixedUpdate(() => {
             spr.position.y = initPos + (spr.position.y - initPos + 1) % 5;
         }));

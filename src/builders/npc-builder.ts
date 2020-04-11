@@ -3,36 +3,36 @@ import { NPC } from '../entities/functional/tilemap';
 import * as ECSA from '../../libs/pixi-component';
 import { DudeBehavior } from '../components/behaviors/dude-behavior';
 import { ResourceStorage } from '../services/resource-storage';
-import { down, PersonNames, Triggers } from '../entities/constants';
+import { down, Triggers } from '../entities/constants';
 import { npcsLayerSelector } from '../services/selectors';
 import { PersonController } from '../components/controllers/person-controller';
-import { BaseTrigger } from '../components/triggers/base-trigger';
 import { DudeTrigger } from '../components/triggers/dude-trigger';
 
-const build = (npc: NPC, scene: ECSA.Scene, resources: ResourceStorage) => {
-    const container = npcsLayerSelector(scene);
-
-    let behavior: ECSA.Component<any> = null;
-
-    switch (npc.name) {
-        case PersonNames.DUDE:
-            behavior = new DudeBehavior();
-            break;
+const buildBehavior = (name: string) => {
+    switch (name) {
+        case 'DudeBehavior':
+            return new DudeBehavior();
         default:
-            throw Error(`Unknown behavior: ${npc.behavior}`);
+            throw Error(`Unknown behavior: ${name}`);
     }
+};
 
-    let trigger: BaseTrigger<any> = null;
-
-    switch (npc.trigger) {
+const buildTrigger = (name: string) => {
+    switch (name) {
         case Triggers.DUDE:
-            trigger = new DudeTrigger();
-            break;
+            return new DudeTrigger();
         default:
-            throw Error(`Unknown dynamic trigger: ${npc.trigger}`);
+            throw Error(`Unknown dynamic trigger: ${name}`);
     }
+};
+
+const build = (npc: NPC, scene: ECSA.Scene, resources: ResourceStorage) => {
+
+    const behavior = buildBehavior(npc.behavior);
+    const trigger = buildTrigger(npc.trigger);
 
     const texture = resources.getPersonSpriteTexture(npc.name);
+    const container = npcsLayerSelector(scene);
 
     new ECSA.Builder(scene)
         .withParent(container)

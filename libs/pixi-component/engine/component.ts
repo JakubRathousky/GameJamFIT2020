@@ -66,6 +66,13 @@ export default class Component<T> {
     }
 
     /**
+     * Called when the component is being detached from the scene
+     */
+    onDetach() {
+        // override
+    }
+
+    /**
      * Handles incoming message
      */
     onMessage(msg: Message) {

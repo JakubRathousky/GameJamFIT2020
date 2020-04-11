@@ -10,6 +10,9 @@ export interface MapControllerProps {
     tileSet: TileSet;
 }
 
+/**
+ * Controller that holds a model of the map and the tiles in the subtree of its attached game object
+ */
 export class MapController extends BaseComponent<MapControllerProps> {
 
     get mapName() {

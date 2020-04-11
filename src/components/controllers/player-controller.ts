@@ -1,13 +1,10 @@
 
-import { PersonState, Messages } from '../../entities/constants';
-import { PersonController } from './person-controller';
+import { PersonController, PersonState } from './person-controller';
 
+/**
+ * Controller for player with additional functions
+ */
 export class PlayerController extends PersonController {
-
-    setState(state: PersonState) {
-        this.owner.stateId = state;
-        this.sendMessage(Messages.PLAYER_STATE_CHANGED);
-    }
 
     get canReceiveInput() {
         return this.state === PersonState.STANDING;

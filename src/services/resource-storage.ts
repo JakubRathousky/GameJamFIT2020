@@ -15,6 +15,9 @@ export interface ResourceProps {
     textures: Map<string, PIXI.BaseTexture>;
 }
 
+/**
+ * Storage for all resources and game assets
+ */
 export class ResourceStorage {
     private props: ResourceProps;
 
@@ -57,6 +60,8 @@ export class ResourceStorage {
     }
 
     createItemTexture(name: string) {
+        // we are destroying items when switching the scenes. Thus we need to clone the textures for every case
+        // don't worry.. the data resides in BaseTexture which gets loaded only once
         const item = this.props.itemsSprites.get(name);
         const baseTexture = this.getTexture(item.spriteSheet);
         const sprite = item.spriteSets.get('default'); // item should always have only one sprite

@@ -135,6 +135,10 @@ export interface GameObject {
      * Detaches itself from its parent and destroys the container
      */
     detachAndDestroy(): void;
+    /**
+     * Removes and destroys all children
+     */
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[];
 }
 
 
@@ -322,6 +326,13 @@ export class Container extends PIXI.Container implements GameObject {
         this.parentGameObject.destroyChild(this);
         this.destroy({children: true, texture: true, baseTexture: false});
     }
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[] {
+        let removed = super.removeChildren(beginIndex, endIndex);
+        for (let removedObj of removed) {
+            (removedObj as PIXI.Container).destroy({children: true, texture: true, baseTexture: false});
+        }
+        return removed;
+    }
 }
 
 /**
@@ -508,6 +519,13 @@ export class ParticleContainer extends PIXI.ParticleContainer implements GameObj
         this.parentGameObject.destroyChild(this);
         this.destroy({children: true, texture: true, baseTexture: false});
     }
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[] {
+        let removed = super.removeChildren(beginIndex, endIndex);
+        for (let removedObj of removed) {
+            (removedObj as PIXI.Container).destroy({children: true, texture: true, baseTexture: false});
+        }
+        return removed;
+    }
 }
 
 /**
@@ -690,6 +708,13 @@ export class Graphics extends PIXI.Graphics implements GameObject {
     detachAndDestroy(): void {
         this.parentGameObject.destroyChild(this);
         this.destroy({children: true, texture: true, baseTexture: false});
+    }
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[] {
+        let removed = super.removeChildren(beginIndex, endIndex);
+        for (let removedObj of removed) {
+            (removedObj as PIXI.Container).destroy({children: true, texture: true, baseTexture: false});
+        }
+        return removed;
     }
 }
 
@@ -877,6 +902,13 @@ export class Sprite extends PIXI.Sprite implements GameObject {
         this.parentGameObject.destroyChild(this);
         this.destroy({children: true, texture: true, baseTexture: false});
     }
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[] {
+        let removed = super.removeChildren(beginIndex, endIndex);
+        for (let removedObj of removed) {
+            (removedObj as PIXI.Container).destroy({children: true, texture: true, baseTexture: false});
+        }
+        return removed;
+    }
 }
 
 /**
@@ -1062,6 +1094,13 @@ export class TilingSprite extends PIXI.TilingSprite implements GameObject {
     detachAndDestroy(): void {
         this.parentGameObject.destroyChild(this);
         this.destroy({children: true, texture: true, baseTexture: false});
+    }
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[] {
+        let removed = super.removeChildren(beginIndex, endIndex);
+        for (let removedObj of removed) {
+            (removedObj as PIXI.Container).destroy({children: true, texture: true, baseTexture: false});
+        }
+        return removed;
     }
 }
 
@@ -1249,6 +1288,13 @@ export class Text extends PIXI.Text implements GameObject {
         this.parentGameObject.destroyChild(this);
         this.destroy({children: true, texture: true, baseTexture: false});
     }
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[] {
+        let removed = super.removeChildren(beginIndex, endIndex);
+        for (let removedObj of removed) {
+            (removedObj as PIXI.Container).destroy({children: true, texture: true, baseTexture: false});
+        }
+        return removed;
+    }
 }
 
 /**
@@ -1434,6 +1480,13 @@ export class BitmapText extends PIXI.BitmapText implements GameObject {
     detachAndDestroy(): void {
         this.parentGameObject.destroyChild(this);
         this.destroy({children: true, texture: true, baseTexture: false});
+    }
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[] {
+        let removed = super.removeChildren(beginIndex, endIndex);
+        for (let removedObj of removed) {
+            (removedObj as PIXI.Container).destroy({children: true, texture: true, baseTexture: false});
+        }
+        return removed;
     }
 }
 
@@ -1621,6 +1674,13 @@ export class Mesh extends PIXI.Mesh implements GameObject {
         this.parentGameObject.destroyChild(this);
         this.destroy({children: true});
     }
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[] {
+        let removed = super.removeChildren(beginIndex, endIndex);
+        for (let removedObj of removed) {
+            (removedObj as PIXI.Container).destroy({children: true, texture: true, baseTexture: false});
+        }
+        return removed;
+    }
 }
 
 /**
@@ -1806,5 +1866,12 @@ export class NineSlicePlane extends PIXI.NineSlicePlane implements GameObject {
     detachAndDestroy(): void {
         this.parentGameObject.destroyChild(this);
         this.destroy({children: true});
+    }
+    destroyChildren(beginIndex?: number, endIndex?: number): PIXI.DisplayObject[] {
+        let removed = super.removeChildren(beginIndex, endIndex);
+        for (let removedObj of removed) {
+            (removedObj as PIXI.Container).destroy({children: true, texture: true, baseTexture: false});
+        }
+        return removed;
     }
 }

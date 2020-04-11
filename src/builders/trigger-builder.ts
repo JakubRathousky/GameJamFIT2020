@@ -7,21 +7,22 @@ import { Triggers } from '../entities/constants';
 
 const build = (scene: ECSA.Scene, trigger: Trigger) => {
     const container = triggersLayerSelector(scene);
+    const baseTriggerProps = {
+        mapPosition: trigger.mapPosition,
+        direction: trigger.direction,
+        condition: trigger.condition,
+    };
     switch(trigger.name) {
         case Triggers.DOOR:
             container.addComponent(new Door({
                 ...trigger.props,
-                mapPosition: trigger.mapPosition,
-                direction: trigger.direction,
-                condition: trigger.condition,
+                ...baseTriggerProps
             }));
             break;
         case Triggers.INFO:
             container.addComponent(new Info({
                 ...trigger.props,
-                mapPosition: trigger.mapPosition,
-                direction: trigger.direction,
-                condition: trigger.condition,
+                ...baseTriggerProps
             }));
             break;
         default:

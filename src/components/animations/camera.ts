@@ -5,6 +5,9 @@ export interface CameraProps {
     container: ECSA.GameObject;
 }
 
+/**
+ * A simple that is moving with the parent container so that the target object is always in the middle
+ */
 export class Camera extends ECSA.Component<CameraProps> {
 
     private scrWidth: number;

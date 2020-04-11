@@ -2,7 +2,7 @@ import * as ECSA from '../../libs/pixi-component';
 import { RawMapTilesData, RawMapTileData } from '../entities/parsed/maptiles-rawdata';
 
 enum ParserMode {
-    UNDEFINED = '', // not yet defined parser node (usually before it gets the very first token)
+    UNDEFINED = '',
     STATIC = 'static',
 }
 

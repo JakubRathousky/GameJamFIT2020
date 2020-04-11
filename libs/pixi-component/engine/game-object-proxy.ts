@@ -335,6 +335,10 @@ export default class GameObjectProxy {
 
     detach() {
         this.detached = true;
+        this.components.forEach(cmp => {
+            this.scene._onComponentDetached(cmp);
+            cmp.onDetach();
+        });
         for(let child of this.pixiObj.children) {
             let cmpObj = <GameObject><any>child;
             if (cmpObj && cmpObj._proxy) {

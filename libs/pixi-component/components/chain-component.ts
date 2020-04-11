@@ -651,26 +651,27 @@ export default class ChainComponent extends Component<void> {
     protected enqueue(key: number, param1: any = null, param2: any = null, param3: any = null) {
         let node = new ExNode(key, param1, param2, param3);
 
-        if (this.current != null && this.current !== this.head) {
+        /*
+          // update 200411: I must have been mad back then to implement this behavior... ALWAYS ADD TO THE TAIL!
+          if (this.current != null && this.current !== this.head) {
             // already running -> append to the current node
             let temp = this.current.next;
             this.current.next = node;
             node.next = temp;
             node.previous = this.current;
             temp.previous = node;
-        } else {
-            // not yet running -> append to the tail
-            if (this.head == null) {
-                this.head = this.tail = node;
-            } else {
-                this.tail.next = node;
-                node.previous = this.tail;
-                this.tail = node;
-            }
+        }*/
 
-            if (this.current == null) {
-                this.current = this.head;
-            }
+        if (this.head == null) {
+            this.head = this.tail = node;
+        } else {
+            this.tail.next = node;
+            node.previous = this.tail;
+            this.tail = node;
+        }
+
+        if (this.current == null) {
+            this.current = this.head;
         }
     }
 

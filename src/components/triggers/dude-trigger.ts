@@ -1,8 +1,7 @@
-import { DialogController } from '../controllers/dialog-controller';
 import { BaseTrigger, BaseTriggerProps, TriggerCondition, TriggerDirection } from './base-trigger';
-import { PersonState, Messages } from '../../entities/constants';
 import * as ECSA from '../../../libs/pixi-component';
 import { PersonController } from '../controllers/person-controller';
+import { talkAction } from '../../actions/talk';
 
 enum DudeDialogState {
     NONE = 0,
@@ -13,6 +12,9 @@ enum DudeDialogState {
     ANSWER_5 = 5,
 }
 
+/**
+ * Experimental trigger for interaction with dude
+ */
 export class DudeTrigger extends BaseTrigger<BaseTriggerProps> {
 
     private dudeCtrl: PersonController;
@@ -29,16 +31,11 @@ export class DudeTrigger extends BaseTrigger<BaseTriggerProps> {
     onAttach() {
         super.onAttach();
         this.dudeCtrl = this.owner.findComponentByName(PersonController.name);
-        this.props.mapPosition = this.dudeCtrl.mapPosition;
-        this.subscribe(Messages.PERSON_STATE_CHANGED);
     }
 
-    onMessage(msg: ECSA.Message) {
-        super.onMessage(msg);
-        if (msg.action === Messages.PERSON_STATE_CHANGED && msg.gameObject === this.owner) {
-            // update position
-            this.props.mapPosition = this.dudeCtrl.mapPosition;
-        }
+
+    get mapPosition() {
+        return this.dudeCtrl.mapPosition;
     }
 
     execute() {
@@ -72,15 +69,6 @@ export class DudeTrigger extends BaseTrigger<BaseTriggerProps> {
     protected displayDialog(textKey: string) {
         const fontName = this.gameCtrl.currentFont;
         const text = this.resourceStorage.getText(this.resourceStorage.gameConfig.defaultLanguage, textKey);
-        const dlg = new DialogController({ fontName, text });
-        this.scene.stage.addComponent(new ECSA.ChainComponent()
-            .execute(() => this.dudeCtrl.direction = this.playerCtrl.direction.multiply(-1)) // opposite direction
-            .execute(() => this.dudeCtrl.setState(PersonState.INTERACTING))
-            .execute(() => this.playerCtrl.setState(PersonState.INTERACTING))
-            .addComponentAndWait(dlg)
-            .execute(() => this.playerCtrl.setState(PersonState.STANDING))
-            .execute(() => this.dudeCtrl.setState(PersonState.STANDING))
-            .execute(() => this.executing = false)
-        );
+        talkAction(this.scene, this.resourceStorage, fontName, text, this.playerCtrl, this.dudeCtrl).execute(() => this.executing = false);
     }
 }

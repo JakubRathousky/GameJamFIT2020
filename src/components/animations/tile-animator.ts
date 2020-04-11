@@ -8,6 +8,9 @@ export interface TileAnimatorProps {
     reverse?: boolean;
 }
 
+/**
+ * Simple tile animation that goes over a collection of sprites and renders them
+ */
 export class TileAnimator extends BaseComponent<TileAnimatorProps> {
 
     private currentTileIndex: number;

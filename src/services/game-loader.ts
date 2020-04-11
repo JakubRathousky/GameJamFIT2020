@@ -15,6 +15,9 @@ import { TileTransformer } from '../parsers/tile-transformer';
 
 type Progress = (amount: number) => void;
 
+/**
+ * Loader of all game assets
+ */
 export class GameLoader {
 
     async loadGame(loader: PIXI.Loader, progressCallBack: Progress): Promise<ResourceStorage> {

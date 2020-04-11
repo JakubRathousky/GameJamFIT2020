@@ -1,4 +1,5 @@
 import * as ECSA from '../../libs/pixi-component';
+import { Keys } from '../../libs/pixi-component/components/key-input-component';
 
 export const left = new ECSA.Vector(-1, 0);
 export const right = new ECSA.Vector(1, 0);
@@ -8,15 +9,6 @@ export const down = new ECSA.Vector(0, 1);
 export enum Attributes {
     RESOURCES = 'RESOURCES',
     GAME_MODEL = 'GAME_MODEL',
-}
-
-export enum PersonState {
-    STANDING = 1,
-    TRYING_TO_WALK = 2,
-    WALKING = 3,
-    TRYING_TO_INTERACT = 4,
-    INTERACTING = 5,
-    CUTSCENE = 6,
 }
 
 export enum Assets {
@@ -65,6 +57,29 @@ export enum SceneObjects {
 
 export enum Messages {
     PERSON_STATE_CHANGED = 'PERSON_STATE_CHANGED',
-    PLAYER_STATE_CHANGED = 'PLAYER_STATE_CHANGED',
-    SCENE_SWITCHED = 'SCENE_SWITCHED'
+    WALK_STEP_FINISHED = 'WALK_STEP_FINISHED',
+    SCENE_SWITCHED = 'SCENE_SWITCHED',
+    GAME_STARTED = 'GAME_STARTED',
+    DOOR_OPENED = 'DOOR_OPENED',
+    DOOR_CLOSED = 'DOOR_CLOSED',
+    TALK_STARTED = 'TALK_STARTED',
+    TALK_ENDED = 'TALK_ENDED'
 }
+
+export enum InputActions {
+    ACTION_LEFT = 'action_left',
+    ACTION_RIGHT = 'action_right',
+    ACTION_UP = 'action_up',
+    ACTION_DOWN = 'action_down',
+    ACTION_INTERACT = 'action_interact',
+    ACTION_OPEN = 'action_open',
+}
+
+export const keyboadMapping = {
+    [InputActions.ACTION_LEFT] : Keys.KEY_LEFT,
+    [InputActions.ACTION_RIGHT] : Keys.KEY_RIGHT,
+    [InputActions.ACTION_UP] : Keys.KEY_UP,
+    [InputActions.ACTION_DOWN] : Keys.KEY_DOWN,
+    [InputActions.ACTION_INTERACT] : Keys.KEY_SPACE,
+    [InputActions.ACTION_OPEN] : Keys.KEY_ENTER,
+};

@@ -17,7 +17,7 @@ export interface NPC {
     trigger: string;
 }
 
-// TODO this is a dynamic entity
+// Waning! this is mutable entity
 export interface Tile {
     pos: ECSA.Vector; // position on the map
     walkableCode: number; // walkable index (0 = walkable, 1 = non-walkable)
@@ -91,6 +91,7 @@ export class TileMap {
         }
 
         output.props.staticTriggers = this.props.staticTriggers.map(p => {return {...p, props: {...p.props} };});
+        output.props.npcs = this.props.npcs.map(p => { return {...p}; } );
         return output;
     }
 
