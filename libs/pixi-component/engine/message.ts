@@ -23,10 +23,10 @@ export interface MessageResponse {
  * A collection of responses for a message that has been sent
  */
 export class MessageResponses {
-    responses: MessageResponse[];
+    responses: MessageResponse[] = [];
 
-    constructor(responses: MessageResponse[]) {
-        this.responses = responses;
+    getResponse<T>(): T {
+        return (this.responses && this.responses.length > 0) ? this.responses[0].data as T : null;
     }
 
     isProcessed() {
@@ -58,6 +58,11 @@ export default class Message {
     expired: boolean = false;
 
     /**
+     * Stores any response along the way
+     */
+    responses: MessageResponses;
+
+    /**
      * Action type identifier
      */
     private _action: string = null;
@@ -77,6 +82,7 @@ export default class Message {
         this._component = component;
         this._gameObject = gameObject;
         this.data = data;
+        this.responses = new MessageResponses();
     }
 
     get action() {

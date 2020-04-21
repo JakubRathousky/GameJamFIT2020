@@ -121,6 +121,7 @@ export interface DialogControllerProps {
     text: string;
     fontName: string;
     gameConfig: RawGameConfig;
+    isPlayer: boolean;
 }
 
 /**
@@ -150,7 +151,7 @@ export class DialogController extends BaseComponent<DialogControllerProps> {
         this.fontTexture = new PIXI.Texture(this.resourceStorage.getFontTexture(this.font.name));
         this.hintTexture = this.resourceStorage.createItemTexture(Items.DIALOG_HINT);
 
-        this.dialog = new ECSA.NineSlicePlane('dialog_plane', this.resourceStorage.createItemTexture(Items.DIALOG_FRAME), 18, 10, 18, 10);
+        this.dialog = new ECSA.NineSlicePlane('dialog_plane', this.resourceStorage.createItemTexture(this.props.isPlayer ? Items.DIALOG_FRAME_PLAYER : Items.DIALOG_FRAME_NPC), 18, 10, 18, 10);
         this.dialog.width = this.scene.width; // cover the whole scene
         this.dialog.height = dialogHeight;
         this.dialog.position.y = this.scene.height - dialogHeight - 5; // show it 5 pixels from the bottom
@@ -229,7 +230,6 @@ export class DialogController extends BaseComponent<DialogControllerProps> {
 
     private displayDialogHint() {
         const spr = new ECSA.Sprite('hint', this.hintTexture.clone());
-        spr.texture.frame = new PIXI.Rectangle(0, 0, 7, 7);
         spr.position.x = this.props.gameConfig.dialogTextMargin + this.currentOffsetX;
         spr.position.y = this.props.gameConfig.dialogTextMargin + this.currentRow * (this.font.charDefaultHeight + 1);
         this.dialog.addChild(spr);

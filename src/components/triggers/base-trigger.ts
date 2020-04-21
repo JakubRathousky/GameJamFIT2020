@@ -1,5 +1,5 @@
 import * as ECSA from '../../../libs/pixi-component';
-import { left, down, up, right, Messages, PersonNames } from '../../entities/constants';
+import { left, down, up, right, Messages, PersonNames, TriggerCondition, TriggerDirection } from '../../entities/constants';
 import { BaseComponent } from '../base-component';
 import { PlayerController } from '../controllers/player-controller';
 import { MapController } from '../controllers/map-controller';
@@ -7,23 +7,6 @@ import { GameController } from '../controllers/game-controller';
 import { playerControllerSelector, mapControllerSelector, gameControllerSelector } from '../../services/selectors';
 import { PersonState } from '../controllers/person-controller';
 
-export enum TriggerCondition {
-    TRY_TO_LEAVE_AREA = 'try_to_leave_area',
-    TRY_TO_ENTER_AREA = 'try_to_enter_area',
-    ENTER_AREA = 'enter_area',
-    ENTER_NEAREST_AREA = 'enter_nearest_area',
-    TRY_TO_INTERACT = 'try_to_interact',
-}
-
-export enum TriggerDirection {
-    LEFT = 'left',
-    RIGHT = 'right',
-    TOP = 'top',
-    BOTTOM = 'bottom',
-    HORIZONTAL = 'horizontal',
-    VERTICAL = 'vertical',
-    ANY = 'any'
-}
 
 export interface BaseTriggerProps {
     mapPosition: ECSA.Vector;
@@ -39,13 +22,13 @@ export interface BaseTriggerProps {
 export abstract class BaseTrigger<T extends BaseTriggerProps> extends BaseComponent<T> {
 
     protected executing: boolean;
-    protected playerCtrl: PlayerController;
     protected mapCtrl: MapController;
     protected gameCtrl: GameController;
+    private playerCtrl: PlayerController;
 
     onAttach() {
         this.subscribe(Messages.PERSON_STATE_CHANGED);
-        this.playerCtrl = playerControllerSelector(this.scene);
+        this.playerCtrl = null; // has to be set with the first invocation
         this.mapCtrl = mapControllerSelector(this.scene);
         this.gameCtrl = gameControllerSelector(this.scene);
         this.executing = false;
@@ -54,10 +37,7 @@ export abstract class BaseTrigger<T extends BaseTriggerProps> extends BaseCompon
     onMessage(msg: ECSA.Message) {
         // re-check the triggers only when the player changes its state
         if (msg.action === Messages.PERSON_STATE_CHANGED && msg.gameObject.name === PersonNames.PLAYER) {
-            if (!this.executing && this.triggered()) {
-                this.executing = true;
-                this.execute();
-            }
+            this.executeInternal();
         }
     }
 
@@ -65,12 +45,14 @@ export abstract class BaseTrigger<T extends BaseTriggerProps> extends BaseCompon
         // override for dynamic triggers
         return this.props.mapPosition;
     }
-
     /**
      * Returns true if the trigger is triggered,
      * usable for more complex conditions
      */
     triggered(): boolean {
+        if(this.playerCtrl === null) {
+            this.playerCtrl = playerControllerSelector(this.scene);
+        }
         const playerPos = this.playerCtrl.mapPosition;
         const nextPos = this.playerCtrl.nextPosition;
         const direction = this.playerCtrl.direction;
@@ -140,8 +122,23 @@ export abstract class BaseTrigger<T extends BaseTriggerProps> extends BaseCompon
         return false;
     }
 
+    protected forceTrigger() {
+        if(!this.executing) {
+            this.executing = true;
+            this.execute();
+        }
+    }
+
+    protected executeInternal() {
+        if (!this.executing && this.triggered()) {
+            this.executing = true;
+            this.execute();
+        }
+    }
+
     /**
      * Executes the trigger and applies all side effects
      */
     abstract execute(): void;
+
 }

@@ -21,13 +21,11 @@ export default class Component<T> {
     removeWhenFinished = true;
     // number of last update, is set automatically by its owner
     _lastFixedUpdate: number;
-    _isFinished = false;
+    _isFinished = true;
 
     // auto-incremented id
     protected _id = 0;
     protected _name: string;
-
-
 
     constructor(props: T) {
         this._id = Component.idCounter++;
@@ -129,8 +127,10 @@ export default class Component<T> {
     /**
      * Sends a message to all subscribers
      */
-    sendMessage(action: string, data: any = null): MessageResponses {
-        return this.scene.sendMessage(new Message(action, this, this.owner, data));
+    sendMessage(action: string, data: any = null): Message {
+        const msg = new Message(action, this, this.owner, data);
+        this.scene.sendMessage(msg);
+        return msg;
     }
 
     /**

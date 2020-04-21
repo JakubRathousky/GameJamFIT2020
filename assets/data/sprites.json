@@ -1,13 +1,26 @@
 {
     "items": [
         {
-            "name": "dialogFrame",
+            "name": "dialogFramePlayer",
             "spriteset": "items",
             "sprites": [
                 {
                     "name": "default",
                     "offsetX": 8,
                     "offsetY": 0,
+                    "width": 38,
+                    "height": 21
+                }
+            ]
+        },
+        {
+            "name": "dialogFrameNPC",
+            "spriteset": "items",
+            "sprites": [
+                {
+                    "name": "default",
+                    "offsetX": 8,
+                    "offsetY": 23,
                     "width": 38,
                     "height": 21
                 }
@@ -25,12 +38,25 @@
                     "height": 7
                 }
             ]
+        },
+        {
+            "name": "bubble",
+            "spriteset": "items",
+            "sprites": [
+                {
+                    "name": "default",
+                    "offsetX": 48,
+                    "offsetY": 0,
+                    "width": 14,
+                    "height": 14
+                }
+            ]
         }
     ],
     "persons": [
         {
             "name": "dude",
-            "spriteset": "dude",
+            "spriteset": "people",
             "sprites": [
                 {
                     "name": "default",
@@ -45,17 +71,17 @@
                                 "front": [{
                                     "posX": 0,
                                     "posY": 0,
-                                    "shiftY": 3
+                                    "shiftY": 1
                                 }],
                                 "back": [{
                                     "posX": 17,
                                     "posY": 0,
-                                    "shiftY": 3
+                                    "shiftY": 1
                                 }],
                                 "side": [{
                                     "posX": 34,
                                     "posY": 0,
-                                    "shiftY": 3
+                                    "shiftY": 1
                                 }]
                             }
                         },
@@ -66,12 +92,12 @@
                                     {
                                         "posX": 51,
                                         "posY": 0,
-                                        "shiftY": 3
+                                        "shiftY": 1
                                     },
                                     {
                                         "posX": 51,
                                         "posY": 0,
-                                        "shiftY": 3,
+                                        "shiftY": 1,
                                         "scaleX": -1
                                     }
                                 ],
@@ -79,12 +105,12 @@
                                     {
                                         "posX": 68,
                                         "posY": 0,
-                                        "shiftY": 3
+                                        "shiftY": 1
                                     },
                                     {
                                         "posX": 68,
                                         "posY": 0,
-                                        "shiftY": 3,
+                                        "shiftY": 1,
                                         "scaleX": -1
                                     }
                                 ],
@@ -92,12 +118,90 @@
                                     {
                                         "posX": 85,
                                         "posY": 0,
-                                        "shiftY": 3
+                                        "shiftY": 1
                                     },
                                     {
                                         "posX": 102,
                                         "posY": 0,
-                                        "shiftY": 3
+                                        "shiftY": 1
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "gil",
+            "spriteset": "people",
+            "sprites": [
+                {
+                    "name": "default",
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "width": 17,
+                    "height": 20,
+                    "animations": [
+                        {
+                            "name": "stand",
+                            "sequence": {
+                                "front": [{
+                                    "posX": 0,
+                                    "posY": 21,
+                                    "shiftY": 1
+                                }],
+                                "back": [{
+                                    "posX": 17,
+                                    "posY": 21,
+                                    "shiftY": 1
+                                }],
+                                "side": [{
+                                    "posX": 34,
+                                    "posY": 21,
+                                    "shiftY": 1
+                                }]
+                            }
+                        },
+                        {
+                            "name": "walk",
+                            "sequence": {
+                                "front": [
+                                    {
+                                        "posX": 51,
+                                        "posY": 21,
+                                        "shiftY": 1
+                                    },
+                                    {
+                                        "posX": 51,
+                                        "posY": 21,
+                                        "shiftY": 1,
+                                        "scaleX": -1
+                                    }
+                                ],
+                                "back": [
+                                    {
+                                        "posX": 68,
+                                        "posY": 21,
+                                        "shiftY": 1
+                                    },
+                                    {
+                                        "posX": 68,
+                                        "posY": 21,
+                                        "shiftY": 1,
+                                        "scaleX": -1
+                                    }
+                                ],
+                                "side": [
+                                    {
+                                        "posX": 85,
+                                        "posY": 21,
+                                        "shiftY": 1
+                                    },
+                                    {
+                                        "posX": 102,
+                                        "posY": 21,
+                                        "shiftY": 1
                                     }
                                 ]
                             }

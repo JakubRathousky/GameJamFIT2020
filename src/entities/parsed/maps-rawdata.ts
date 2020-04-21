@@ -1,4 +1,4 @@
-import { TriggerCondition, TriggerDirection } from '../../components/triggers/base-trigger';
+import { TriggerCondition, TriggerDirection } from '../constants';
 
 export interface RawMapsData {
     name: string;
@@ -12,9 +12,9 @@ export interface RawMapsData {
     }[];
     staticTriggers: {
         name: string;
-        position: [number, number];
-        condition: TriggerCondition;
-        direction: TriggerDirection;
-        props: any;
+        position?: [number, number];
+        condition?: TriggerCondition;
+        direction?: TriggerDirection;
+        props?: any;
     }[];
 }

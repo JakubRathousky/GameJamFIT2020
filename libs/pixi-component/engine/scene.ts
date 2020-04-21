@@ -7,7 +7,7 @@ import { Container } from './game-object';
 import { LookupMap } from '../utils/lookup-map';
 import DebugComponent from '../components/debug-component';
 import { QueryCondition, queryConditionCheck } from '../utils/query-condition';
-import { MessageResponse, MessageResponses } from './message';
+import { MessageResponse } from './message';
 
 
 /**
@@ -287,7 +287,7 @@ export default class Scene {
     /**
      * Sends message to all subscribers
      */
-    sendMessage(msg: Message): MessageResponses {
+    sendMessage(msg: Message) {
         const responses: MessageResponse[] = [];
         this.subscribers.findAll(msg.action).forEach(ent => {
             // don't send message to its own sender
@@ -302,11 +302,11 @@ export default class Scene {
 
         // check global subscribers (expiration doesn't apply and we won't receive any response)
         this.subscribers.findAll(Messages.ANY).forEach(ent => ent.onMessage(msg));
-        const response = new MessageResponses(responses);
+        // add all responses
+        msg.responses.responses = responses;
         if(this.config.debugEnabled) {
-            console.log(`MSG: ${msg.action}; ${response.isProcessed() ? 'PROCESSED' : 'IGNORED'} ${response.isError() ? 'ERROR' : 'SUCCESS'}`);
+            console.log(`MSG: ${msg.action}; ${msg.responses.isProcessed() ? 'PROCESSED' : 'IGNORED'} ${msg.responses.isError() ? 'ERROR' : 'SUCCESS'}`);
         }
-        return response;
     }
 
     /**
@@ -470,6 +470,7 @@ export default class Scene {
             obj.initAllComponents();
             this.componentNotifyDisabled = false;
         }
+        this.sendMessage(new Message(Messages.OBJECT_ADDED, null, obj.pixiObj));
     }
 
     _onObjectRemoved(obj: GameObjectProxy) {

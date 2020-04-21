@@ -1,10 +1,9 @@
 import * as ECSA from '../../../libs/pixi-component';
-import { TriggerCondition, TriggerDirection } from '../../components/triggers/base-trigger';
-import { PersonNames } from '../constants';
+import { PersonNames, TriggerCondition, TriggerDirection } from '../constants';
 
 export interface Trigger {
     name: string;
-    mapPosition: ECSA.Vector;
+    mapPosition?: ECSA.Vector;
     condition: TriggerCondition;
     direction: TriggerDirection;
     props: any;
@@ -12,9 +11,9 @@ export interface Trigger {
 
 export interface NPC {
     name: PersonNames;
-    behavior: string;
+    behavior?: string;
     initPosition: ECSA.Vector;
-    trigger: string;
+    trigger?: string;
 }
 
 // Waning! this is mutable entity

@@ -1,7 +1,9 @@
-import { BaseTrigger, BaseTriggerProps, TriggerCondition, TriggerDirection } from './base-trigger';
+import { BaseTrigger, BaseTriggerProps } from './base-trigger';
 import * as ECSA from '../../../libs/pixi-component';
 import { PersonController } from '../controllers/person-controller';
 import { talkAction } from '../../actions/talk';
+import { TriggerCondition, TriggerDirection } from '../../entities/constants';
+import { playerControllerSelector } from '../../services/selectors';
 
 enum DudeDialogState {
     NONE = 0,
@@ -69,6 +71,14 @@ export class DudeTrigger extends BaseTrigger<BaseTriggerProps> {
     protected displayDialog(textKey: string) {
         const fontName = this.gameCtrl.currentFont;
         const text = this.resourceStorage.getText(this.resourceStorage.gameConfig.defaultLanguage, textKey);
-        talkAction(this.scene, this.resourceStorage, fontName, text, this.playerCtrl, this.dudeCtrl).execute(() => this.executing = false);
+        talkAction({
+            resource: this.resourceStorage,
+            fontName,
+            text,
+            interactingPerson: playerControllerSelector(this.scene),
+            blockInput: true,
+            listeningPerson: this.dudeCtrl})
+            .call(() => this.executing = false)
+            .executeUpon(this.owner);
     }
 }

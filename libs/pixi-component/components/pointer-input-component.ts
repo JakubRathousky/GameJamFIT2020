@@ -1,6 +1,5 @@
 import Component from '../engine/component';
 import Message from '../engine/message';
-import { MessageResponses } from '../engine/message';
 
 export enum PointerMessages {
     POINTER_TAP = 'pointer-tap',
@@ -76,7 +75,7 @@ export class PointerInputComponent extends Component<PointerInputComponentProps>
         }
     }
 
-    sendMessage(action: string, data: any = null): MessageResponses {
+    sendMessage(action: string, data: any = null): Message {
         // wait for next update loop to send all the messages
         this.messagesToSend.push(new Message(action, this, this.owner, data));
         return null;

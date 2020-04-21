@@ -25,7 +25,6 @@ export class PersonViewModel extends BaseComponent<PersonViewModelProps> {
 
     onInit() {
         super.onInit();
-        this.subscribe(Messages.PERSON_STATE_CHANGED, Messages.WALK_STEP_FINISHED);
         this.personCtrl = this.owner.findComponentByName(this.props.controller ?? PersonController.name);
         this.personData = this.resourceStorage.getPersonSpriteSheet(this.props.name).spriteSets.get('default');
         this.tileSize = mapControllerSelector(this.scene).tileSize;
@@ -33,14 +32,27 @@ export class PersonViewModel extends BaseComponent<PersonViewModelProps> {
         this.defaultAnchor = new ECSA.Vector(this.owner.asSprite().anchor.x, this.owner.asSprite().anchor.y);
     }
 
+    onAttach() {
+        this.subscribe(Messages.PERSON_STATE_CHANGED, Messages.WALK_STEP_FINISHED);
+        this.resetZIndex();
+    }
+
 
     onMessage(msg: ECSA.Message) {
         if (msg.action === Messages.PERSON_STATE_CHANGED && msg.gameObject === this.owner) {
             // re-fetch the walking animation later on
             this.walkAnim = null;
+            this.resetZIndex();
         } else if (msg.action === Messages.WALK_STEP_FINISHED && msg.gameObject === this.owner) {
             // update visual position
             this.owner.position.set(this.personCtrl.mapPosition.x * this.tileSize, this.personCtrl.mapPosition.y * this.tileSize);
+        }
+    }
+
+    resetZIndex() {
+        if(this.owner.zIndex !== this.personCtrl.mapPosition.y) {
+            this.owner.zIndex = this.personCtrl.mapPosition.y;
+            this.owner.parent.sortDirty = true;
         }
     }
 
@@ -50,8 +62,7 @@ export class PersonViewModel extends BaseComponent<PersonViewModelProps> {
 
         switch (this.personCtrl.state) {
             case PersonState.STANDING:
-            case PersonState.INTERACTING:
-            case PersonState.CUTSCENE:
+            case PersonState.BLOCKED:
                 this.renderStanding();
                 break;
             case PersonState.WALKING:

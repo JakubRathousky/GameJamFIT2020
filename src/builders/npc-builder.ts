@@ -4,9 +4,9 @@ import * as ECSA from '../../libs/pixi-component';
 import { DudeBehavior } from '../components/behaviors/dude-behavior';
 import { ResourceStorage } from '../services/resource-storage';
 import { down, Triggers } from '../entities/constants';
-import { npcsLayerSelector } from '../services/selectors';
 import { PersonController } from '../components/controllers/person-controller';
 import { DudeTrigger } from '../components/triggers/dude-trigger';
+import { peopleLayerSelector } from '../services/selectors';
 
 const buildBehavior = (name: string) => {
     switch (name) {
@@ -28,22 +28,26 @@ const buildTrigger = (name: string) => {
 
 const build = (npc: NPC, scene: ECSA.Scene, resources: ResourceStorage) => {
 
-    const behavior = buildBehavior(npc.behavior);
-    const trigger = buildTrigger(npc.trigger);
-
     const texture = resources.getPersonSpriteTexture(npc.name);
-    const container = npcsLayerSelector(scene);
+    const container = peopleLayerSelector(scene);
 
-    new ECSA.Builder(scene)
+    const builder = new ECSA.Builder(scene)
         .withParent(container)
         .anchor(0, 0.3)
         .withName(npc.name)
         .asSprite(new PIXI.Texture(texture))
         .withComponent(new PersonController({ initPosition: npc.initPosition, initDirection: down }))
-        .withComponent(new PersonViewModel({name: npc.name}))
-        .withComponent(behavior)
-        .withComponent(trigger)
-        .build();
+        .withComponent(new PersonViewModel({ name: npc.name }));
+
+    if (npc.behavior) {
+        builder.withComponent(buildBehavior(npc.behavior));
+    }
+
+    if (npc.trigger) {
+        builder.withComponent(buildTrigger(npc.trigger));
+    }
+    return builder.build();
+
 };
 
 export default {

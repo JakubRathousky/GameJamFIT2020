@@ -2,8 +2,8 @@ import { RawGameConfig } from '../../entities/parsed/game-config';
 import { BaseComponent } from '../base-component';
 import { MapNames, Messages } from '../../entities/constants';
 import * as ECSA from '../../../libs/pixi-component';
-import { sceneSwitchAction } from '../../actions/scene-switch';
-import { mapLayerSelector, npcsLayerSelector, triggersLayerSelector, mapControllerSelector } from '../../services/selectors';
+import { mapLayerSelector, triggersLayerSelector, mapControllerSelector, peopleLayerSelector } from '../../services/selectors';
+import { SceneSwitchMessage } from '../../entities/messages/scene-switch-message';
 
 export interface GameSceneCache {
     map: ECSA.Container;
@@ -28,6 +28,7 @@ export class GameController extends BaseComponent<RawGameConfig> {
     onInit() {
         super.onInit();
         this.sendMessage(Messages.GAME_STARTED);
+        this.subscribe(Messages.SCENE_BEFORE_SWITCH);
     }
 
     get currentFont() {
@@ -46,28 +47,28 @@ export class GameController extends BaseComponent<RawGameConfig> {
         this._currentLanguage = lng;
     }
 
-    switchMapAsync(name: MapNames, playerPosition: ECSA.Vector, playerDirection: ECSA.Vector) {
-        this.scene.invokeWithDelay(0, () => {
-            this.switchMap(name, playerPosition, playerDirection);
-        });
+    get currentMap() {
+        return mapControllerSelector(this.scene).mapName;
     }
 
-    switchMap(name: MapNames, playerPosition: ECSA.Vector, playerDirection: ECSA.Vector) {
-        if(this.gameScenes.has(name)) {
-            // switch to previous scene
-            const cachedScene = this.gameScenes.get(name);
-            sceneSwitchAction({name, scene: this.scene, resources: this.resourceStorage, playerPosition, playerDirection, cachedScene});
-        } else {
-            // build a new scene
-            if(mapLayerSelector(this.scene)) {
-                const currentMap = mapControllerSelector(this.scene).mapName;
+    onMessage(msg: ECSA.Message) {
+        if(msg.action === Messages.SCENE_BEFORE_SWITCH) {
+            // side effect: cache the scene
+            const scene = msg.data as SceneSwitchMessage;
+            if((scene.previousScene && !this.gameScenes.has(scene.previousScene))) {
+                // cache previous scene
+                const currentMap = scene.previousScene;
                 this.gameScenes.set(currentMap, {
                     map: mapLayerSelector(this.scene),
-                    npcs: npcsLayerSelector(this.scene),
+                    npcs: peopleLayerSelector(this.scene),
                     triggers: triggersLayerSelector(this.scene)
                 });
             }
-            sceneSwitchAction({name, scene: this.scene, resources: this.resourceStorage, playerPosition, playerDirection});
+
+            if(this.gameScenes.has(scene.nextScene)) {
+                // get from cache
+                return this.gameScenes.get(name);
+            }
         }
     }
 }

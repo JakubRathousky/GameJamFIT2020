@@ -1,5 +1,6 @@
 import { BaseTrigger, BaseTriggerProps } from './base-trigger';
 import { readLabelAction } from '../../actions/read-label';
+import { playerControllerSelector } from '../../services/selectors';
 
 interface InfoProps extends BaseTriggerProps {
     textKey: string;
@@ -14,6 +15,8 @@ export class Info extends BaseTrigger<InfoProps> {
         const fontName = this.gameCtrl.currentFont;
         const text = this.resourceStorage.getText(this.resourceStorage.gameConfig.defaultLanguage, this.props.textKey);
 
-        readLabelAction(this.scene, this.resourceStorage, fontName, text, this.playerCtrl).execute(() => this.executing = false);
+        readLabelAction({resource: this.resourceStorage, fontName, text, interactingPerson: playerControllerSelector(this.scene)})
+            .call(() => this.executing = false)
+            .executeUpon(this.scene.stage);
     }
 }

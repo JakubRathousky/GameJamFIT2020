@@ -13,6 +13,9 @@
         ],
         "staticTriggers": [
             {
+                "name": "gil"
+            },
+            {
                 "name": "door",
                 "position": [10, 9],
                 "condition": "try_to_enter_area",

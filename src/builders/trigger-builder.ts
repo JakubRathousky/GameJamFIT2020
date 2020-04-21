@@ -1,6 +1,7 @@
 import { Trigger } from '../entities/functional/tilemap';
 import { Door } from '../components/triggers/door';
 import { Info } from '../components/triggers/info';
+import { Gil } from '../components/triggers/gil';
 import * as ECSA from '../../libs/pixi-component';
 import { triggersLayerSelector } from '../services/selectors';
 import { Triggers } from '../entities/constants';
@@ -21,6 +22,12 @@ const build = (scene: ECSA.Scene, trigger: Trigger) => {
             break;
         case Triggers.INFO:
             container.addComponent(new Info({
+                ...trigger.props,
+                ...baseTriggerProps
+            }));
+            break;
+        case Triggers.GIL:
+            container.addComponent(new Gil({
                 ...trigger.props,
                 ...baseTriggerProps
             }));

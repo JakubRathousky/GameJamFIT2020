@@ -47,7 +47,7 @@ export class PlayerInputController extends BaseComponent<void> {
                 if(performer) {
                     // wait until it has finished and check the input again so we will
                     // have a smooth movement if we keep the arrows pressed
-                    performer.execute(() => {
+                    performer.call(() => {
                         this.onFixedUpdate();
                     });
                 }

@@ -5,7 +5,7 @@ import { QueryCondition, queryConditionCheck } from '../utils/query-condition';
 
 const CMD_BEGIN_REPEAT = 1;
 const CMD_END_REPEAT = 2;
-const CMD_EXECUTE = 3;
+const CMD_CALL = 3;
 const CMD_BEGIN_WHILE = 4;
 const CMD_END_WHILE = 5;
 const CMD_BEGIN_INTERVAL = 6;
@@ -16,15 +16,17 @@ const CMD_END_IF = 10;
 const CMD_WAIT_TIME = 11;
 const CMD_ADD_COMPONENT = 12;
 const CMD_ADD_COMPONENT_AND_WAIT = 13;
-const CMD_WAIT_FOR_FINISH = 14;
-const CMD_WAIT_UNTIL = 15;
-const CMD_WAIT_FRAMES = 16;
-const CMD_WAIT_FOR_MESSAGE = 17;
-const CMD_WAIT_FOR_MESSAGE_CONDITION = 18;
-const CMD_REMOVE_COMPONENT = 19;
-const CMD_REMOVE_GAME_OBJECTS_BY_QUERY = 20;
-const CMD_REMOVE_GAME_OBJECT = 21;
-const CMD_ADD_COMPONENTS_AND_WAIT = 22;
+const CMD_WAIT_FOR_ALL_TO_FINISH = 14;
+const CMD_WAIT_FOR_FIRST_TO_FINISH = 15;
+const CMD_WAIT_UNTIL = 16;
+const CMD_WAIT_FRAMES = 17;
+const CMD_WAIT_FOR_MESSAGE = 18;
+const CMD_WAIT_FOR_MESSAGE_CONDITION = 19;
+const CMD_REMOVE_COMPONENT = 20;
+const CMD_REMOVE_GAME_OBJECTS_BY_QUERY = 21;
+const CMD_REMOVE_GAME_OBJECT = 22;
+const CMD_ADD_COMPONENTS_AND_WAIT = 23;
+const CMD_SEND_MESSAGE = 24;
 
 // a function that doesn't return anything
 interface Action<T> {
@@ -190,6 +192,43 @@ export default class ChainComponent extends Component<void> {
     protected tmpParam: any = null;
     protected tmpParam2: any = null;
 
+    protected interruptChecks: Func<void, boolean>[] = [];
+
+    constructor(name: string = 'Chain') {
+        super();
+        this._name = name;
+    }
+
+    mergeAtBeginning(other: ChainComponent): ChainComponent {
+        if(other.isRunning) {
+            throw new Error('Can\'t merge running component!');
+        }
+        if(this.head) {
+            other.tail.next = this.head;
+            this.head = other.head;
+        } else {
+            this.head = other.head;
+            this.tail = other.tail;
+        }
+        other.head = other.tail = null;
+        return this;
+    }
+
+    mergeWith(other: ChainComponent): ChainComponent {
+        if(other.isRunning) {
+            throw new Error('Can\'t merge running component!');
+        }
+        if(this.tail) {
+            this.tail.next = other.head;
+            this.tail = other.tail;
+        } else {
+            this.tail = other.tail;
+            this.head = other.head;
+        }
+        other.head = other.tail = null;
+        return this;
+    }
+
     /**
      * Repeats the following part of the chain until endRepeat()
      * @param num number of repetitions, 0 for infinite loop; or function that returns that number
@@ -207,12 +246,25 @@ export default class ChainComponent extends Component<void> {
         return this;
     }
 
+    sendMessageDelayed(action: string, data: any = null): ChainComponent {
+        this.enqueue(CMD_SEND_MESSAGE, action, data);
+        return this;
+    }
+
     /**
      * Executes a closure
      * @param {action} func function to execute
      */
-    execute(func: Action<ChainComponent>): ChainComponent {
-        this.enqueue(CMD_EXECUTE, func);
+    call(func: Action<ChainComponent>): ChainComponent {
+        this.enqueue(CMD_CALL, func);
+        return this;
+    }
+
+    /**
+     * Attaches itself to a game objects and executes the pipeline
+     */
+    executeUpon(obj: Container): ChainComponent {
+        obj.addComponentAndRun(this);
         return this;
     }
 
@@ -321,11 +373,20 @@ export default class ChainComponent extends Component<void> {
     }
 
     /**
-     * Waits until given component hasn't finished
+     * Waits until given component has finished
      * @param component or function that returns this component
      */
-    waitForFinish(component: Component<any> | Component<any>[] | Func<void, Component<any>> | Func<void, Component<any>[]>): ChainComponent {
-        this.enqueue(CMD_WAIT_FOR_FINISH, component);
+    waitFor(component: Component<any> | Component<any>[] | Func<void, Component<any>> | Func<void, Component<any>[]>): ChainComponent {
+        this.enqueue(CMD_WAIT_FOR_ALL_TO_FINISH, component);
+        return this;
+    }
+
+    /**
+     * Waits until first component has finished. The others are interrupted
+     * @param components or a function that returns a set of components
+     */
+    waitForFirst(components: Component<any>[] | Func<void, Component<any>[]>): ChainComponent {
+        this.enqueue(CMD_WAIT_FOR_FIRST_TO_FINISH, components);
         return this;
     }
 
@@ -391,6 +452,16 @@ export default class ChainComponent extends Component<void> {
         return this;
     }
 
+    /**
+     * Interrupts this component whenever a condition is true
+     * The condition is checked every loop
+     * @param obj
+     */
+    interruptIf(func: Func<void, boolean>): ChainComponent {
+        this.interruptChecks.push(func);
+        return this;
+    }
+
     onMessage(msg: Message) {
         if (this.current && ((this.current.key === CMD_WAIT_FOR_MESSAGE && this.current.param1 === msg.action) || (
             this.current.key === CMD_WAIT_FOR_MESSAGE_CONDITION && this.current.param1 === msg.action &&
@@ -404,6 +475,16 @@ export default class ChainComponent extends Component<void> {
         if (this.owner === null) {
             // one of the closures might have removed this component from its parent
             return;
+        }
+
+        if(this.interruptChecks.length !== 0) {
+            // always check for conditions for interrupt
+            for(let check of this.interruptChecks) {
+                if(check()) {
+                    this.finish();
+                    return;
+                }
+            }
         }
 
         if (this.current == null) {
@@ -440,7 +521,7 @@ export default class ChainComponent extends Component<void> {
                     this.gotoNextImmediately(delta, absolute);
                 }
                 break;
-            case CMD_EXECUTE:
+            case CMD_CALL:
                 // execute a function and go to the next item
                 this.current.param1(this);
                 this.gotoNextImmediately(delta, absolute);
@@ -558,7 +639,7 @@ export default class ChainComponent extends Component<void> {
                     // add only once
                     this.current.cacheParams();
                     let gameObj = this.current.param2A != null ? this.current.param2A : this.owner;
-                    gameObj.addComponent(this.current.param1A);
+                    gameObj.addComponentAndRun(this.current.param1A);
                 }
                 // wait for finish
                 if (!this.current.getParam1().isRunning) {
@@ -573,7 +654,7 @@ export default class ChainComponent extends Component<void> {
                     this.current.cacheParams();
                     let gameObj = this.current.param2A != null ? this.current.param2A : this.owner;
                     for (let component of this.current.param1A) {
-                        gameObj.addComponent(component);
+                        gameObj.addComponentAndRun(component);
                     }
                 }
                 // wait for finish
@@ -583,7 +664,11 @@ export default class ChainComponent extends Component<void> {
                     this.gotoNextImmediately(delta, absolute);
                 }
                 break;
-            case CMD_WAIT_FOR_FINISH:
+            case CMD_SEND_MESSAGE:
+                this.sendMessage(this.current.getParam1(), this.current.getParam2());
+                this.gotoNextImmediately(delta, absolute);
+                break;
+            case CMD_WAIT_FOR_ALL_TO_FINISH:
                 // wait until isFinished is true
                 if (!this.current.cached) {
                     this.current.cacheParams();
@@ -592,6 +677,19 @@ export default class ChainComponent extends Component<void> {
                 const isArray = Array.isArray(cmp);
                 if ((!isArray && !cmp.isRunning) || (isArray && (cmp as Component<any>[]).filter(c => c.isRunning).length === 0)) {
                     this.current.resetCache();
+                    this.gotoNextImmediately(delta, absolute);
+                }
+                break;
+            case CMD_WAIT_FOR_FIRST_TO_FINISH:
+                // wait until isFinished is true for at least one case
+                if (!this.current.cached) {
+                    this.current.cacheParams();
+                }
+                const cmps = cmp as Component<any>[];
+                if (cmps.filter(c => !c.isRunning).length === 0) {
+                    this.current.resetCache();
+                    // finish the other ones
+                    cmps.forEach(cmp => cmp.finish());
                     this.gotoNextImmediately(delta, absolute);
                 }
                 break;

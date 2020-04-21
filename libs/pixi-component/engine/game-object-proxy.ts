@@ -86,6 +86,9 @@ export default class GameObjectProxy {
             if (!this.isOnScene) {
                 throw new Error('This object hasn\'t been added to the scene yet');
             }
+            if(this.isDetached) {
+                throw new Error('Can\'t run a component upon a detached object!');
+            }
             this.initComponent(component);
             component.onUpdate(this.scene.currentDelta, this.scene.currentAbsolute);
         } else {
@@ -277,6 +280,12 @@ export default class GameObjectProxy {
      */
     onChildRemoved(object: GameObjectProxy) {
         object.detach();
+        for(let child of object.pixiObj.children) {
+            let cmpObj = <GameObject><any>child;
+            if(cmpObj && cmpObj._proxy) {
+                object.onChildRemoved(cmpObj._proxy);
+            }
+        }
         this.scene._onObjectRemoved(object);
     }
 
@@ -315,16 +324,14 @@ export default class GameObjectProxy {
 
     initAllComponents() {
         if (this.componentsToAdd.length !== 0) {
-            try {
-                this.componentsToAdd.forEach(cmp => {
-                    // at first, add it to the set so it can be searched
-                    this.components.set(cmp.id, cmp);
-                    this.initComponent(cmp);
-                });
-            } finally {
-                // even if something crashes, never initialize anything twice
-                this.componentsToAdd = [];
-            }
+            // create copy because someone else can add new components in the meantime
+            const toAdd = [...this.componentsToAdd];
+            this.componentsToAdd = [];
+            toAdd.forEach(cmp => {
+                // at first, add it to the set so it can be looked up
+                this.components.set(cmp.id, cmp);
+                this.initComponent(cmp);
+            });
         }
     }
 

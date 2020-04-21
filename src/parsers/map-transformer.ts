@@ -1,9 +1,9 @@
 import * as ECSA from '../../libs/pixi-component';
-import { TileMap, Tile } from '../entities/functional/tilemap';
+import { TileMap, Tile, Trigger } from '../entities/functional/tilemap';
 import { RawMapsData } from '../entities/parsed/maps-rawdata';
 import { RawMapTilesData } from '../entities/parsed/maptiles-rawdata';
 import { RawSheetsData } from '../entities/parsed/sheets-rawdata';
-import { PersonNames } from '../entities/constants';
+import { PersonNames, TriggerCondition, TriggerDirection } from '../entities/constants';
 
 export class MapTransformer {
 
@@ -42,14 +42,13 @@ export class MapTransformer {
                 staticTriggers: map.staticTriggers ? map.staticTriggers.map(p => {
                     return {
                         name: p.name,
-                        mapPosition: new ECSA.Vector(p.position),
-                        condition: p.condition,
-                        direction: p.direction,
-                        props: { ...p.props },
-                    };
+                        mapPosition: p.position != null ? new ECSA.Vector(p.position) : null,
+                        condition: p.condition ?? TriggerCondition.UNKNOWN,
+                        direction: p.direction ?? TriggerDirection.UNKNOWN,
+                        props: p.props != null ? { ...p.props } : { },
+                    } as Trigger;
                 }) : []
             });
-
             output.set(map.name, tileMap);
         });
 

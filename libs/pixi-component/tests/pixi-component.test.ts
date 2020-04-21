@@ -219,7 +219,7 @@ class ChainComponentTest extends BaseTest {
             .addComponent(() => new GenericComponent('').doOnUpdate((cmp, delta) => gfx.rotation += 0.01 * delta).setTimeout(1000).doOnFinish((cmp) => cmp.sendMessage('TOKEN')))
             .waitForMessage('TOKEN')
             .endRepeat()
-            .execute(() => {
+            .call(() => {
                 scene.invokeWithDelay(0, () => onFinish('Chain component repeat test', tokens === 2 ? 'OK' : 'FAILURE', tokens === 2));
             })
         );
@@ -234,19 +234,19 @@ class ChainComponentTest2 extends BaseTest {
         let whileTokens = 0;
         scene.addGlobalComponent(new ChainComponent()
             .beginIf(() => false)
-            .execute(() => tokens = -10)
+            .call(() => tokens = -10)
             .else()
-            .execute(() => tokens++)
+            .call(() => tokens++)
             .endIf()
             .beginIf(() => true)
-            .execute(() => tokens++)
+            .call(() => tokens++)
             .else()
-            .execute(() => tokens = -10)
+            .call(() => tokens = -10)
             .endIf()
             .beginWhile(() => whileTokens <= 10)
-            .execute(() => whileTokens++)
+            .call(() => whileTokens++)
             .endWhile()
-            .execute(() => {
+            .call(() => {
                 scene.invokeWithDelay(0, () => onFinish('Chain component repeat test 2', tokens === 2 ? 'OK' : 'FAILURE', tokens === 2));
             })
         );
@@ -260,7 +260,7 @@ class ChainComponentTest3 extends BaseTest {
         let finished = false;
         scene.addGlobalComponent(new ChainComponent()
             .waitForMessage('TOKEN')
-            .execute(() => {
+            .call(() => {
                 finished = true;
                 scene.invokeWithDelay(0, () => onFinish('Chain component repeat test 3', 'OK', true));
             })
@@ -291,7 +291,7 @@ class ChainComponentTest4 extends BaseTest {
 
         scene.addGlobalComponent(new ChainComponent()
             .addComponentsAndWait([cmpGenerator(), cmpGenerator(), cmpGenerator()]) // add 3 components and wait when all of them finish
-            .execute(() => {
+            .call(() => {
                 finished = true;
                 let success = token === 3;
                 scene.invokeWithDelay(0, () => onFinish('Chain component wait for 3 components', success ? 'OK' : 'FAILURE, expected 3, got ' + token, success));
@@ -317,14 +317,14 @@ class ChainComponentConditionalTest extends BaseTest {
         scene.stage.stateId = 22;
         scene.addGlobalComponent(new ChainComponent()
             .waitForMessageConditional('TOKEN', { ownerState: 22, ownerFlag: 12 })
-            .execute(() => {
+            .call(() => {
                 finished = true;
                 scene.invokeWithDelay(0, () => onFinish('Chain component conditional test', 'OK', true));
             })
         );
 
         scene.invokeWithDelay(200, () => {
-            scene.stage.addComponent(new ChainComponent().execute((cmp) => cmp.sendMessage('TOKEN')));
+            scene.stage.addComponent(new ChainComponent().call((cmp) => cmp.sendMessage('TOKEN')));
 
             scene.invokeWithDelay(1000, () => {
                 if (!finished) {
@@ -412,7 +412,7 @@ class GenericComponentTest extends BaseTest {
             .asText('GENERIC', new PIXI.TextStyle({ fontSize: 35, fill: '#FFF' }))
             .withComponent(new GenericComponent('tint').doOnUpdate((cmp) => cmp.owner.asText().tint = 0xFFFF + Math.floor(Math.random() * 0xFF))) // animation, not important for the test
             .withComponent(new GenericComponent('gencmp').doOnMessage('msg_example', () => token++))
-            .withComponent(new ChainComponent().waitTime(1000).execute((cmp) => cmp.sendMessage('msg_example')).execute((cmp) => cmp.sendMessage('msg_example')))
+            .withComponent(new ChainComponent().waitTime(1000).call((cmp) => cmp.sendMessage('msg_example')).call((cmp) => cmp.sendMessage('msg_example')))
             .withParent(scene.stage).build();
 
         // chain component will fire two messages that should be captured by GenericComponent and token var should be increased
@@ -439,7 +439,7 @@ class GenericComponentTest2 extends BaseTest {
             .asText('GENERIC 2', new PIXI.TextStyle({ fontSize: 35, fill: '#0FF' }))
             .withComponent(new GenericComponent('tint').doOnUpdate((cmp) => cmp.owner.asText().tint = 0x0000 + Math.floor(Math.random() * 0xFF))) // animation, not important for the test
             .withComponent(new GenericComponent('gencmp').doOnMessageOnce('msg_example', () => token++))
-            .withComponent(new ChainComponent().waitTime(1000).execute((cmp) => cmp.sendMessage('msg_example')).execute((cmp) => cmp.sendMessage('msg_example')))
+            .withComponent(new ChainComponent().waitTime(1000).call((cmp) => cmp.sendMessage('msg_example')).call((cmp) => cmp.sendMessage('msg_example')))
             .withParent(scene.stage).build();
 
         // chain component will fire two messages that should be captured by GenericComponent only once
@@ -478,16 +478,16 @@ class GenericComponentConditionalTest extends BaseTest {
                 .doOnMessageConditional('msg_conditional', { ownerState: 12 }, () => tokenState++) // increase only if the object has state == 12
                 .doOnMessageConditional('msg_conditional', { ownerFlag: 50 }, () => tokenFlag++)) // increase only if the object has flag == 50
             .withComponent(new ChainComponent().waitTime(1000)
-                .execute((cmp) => cmp.sendMessage('msg_example')) // shouldn't be captured at all
-                .execute((cmp) => cmp.owner.addTag('test_tag'))
-                .execute((cmp) => cmp.sendMessage('msg_conditional')) // should be captured by empty closure, name-closure and tag-closure
-                .execute((cmp) => cmp.owner.removeTag('test_tag'))
-                .execute((cmp) => cmp.owner.stateId = 12)
-                .execute((cmp) => cmp.sendMessage('msg_conditional')) // should be captured by empty closure, name-closure and state-closure
-                .execute((cmp) => cmp.owner.stateId = 13)
-                .execute((cmp) => cmp.sendMessage('msg_conditional')) // should be captured by empty closure, name-closure
-                .execute((cmp) => cmp.owner.setFlag(50))
-                .execute((cmp) => cmp.sendMessage('msg_conditional'))) // should be captured by empty closure, name-closure and flag-closure
+                .call((cmp) => cmp.sendMessage('msg_example')) // shouldn't be captured at all
+                .call((cmp) => cmp.owner.addTag('test_tag'))
+                .call((cmp) => cmp.sendMessage('msg_conditional')) // should be captured by empty closure, name-closure and tag-closure
+                .call((cmp) => cmp.owner.removeTag('test_tag'))
+                .call((cmp) => cmp.owner.stateId = 12)
+                .call((cmp) => cmp.sendMessage('msg_conditional')) // should be captured by empty closure, name-closure and state-closure
+                .call((cmp) => cmp.owner.stateId = 13)
+                .call((cmp) => cmp.sendMessage('msg_conditional')) // should be captured by empty closure, name-closure
+                .call((cmp) => cmp.owner.setFlag(50))
+                .call((cmp) => cmp.sendMessage('msg_conditional'))) // should be captured by empty closure, name-closure and flag-closure
             .withParent(scene.stage).build();
 
         scene.invokeWithDelay(2000, () => {

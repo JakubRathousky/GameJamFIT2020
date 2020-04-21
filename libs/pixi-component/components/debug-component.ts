@@ -2,6 +2,7 @@ import Component from '../engine/component';
 import { Messages } from '../engine/constants';
 import { Container } from '../engine/game-object';
 import Message from '../engine/message';
+import { Keys } from './key-input-component';
 
 /**
  * Debugging component that display a scene graph
@@ -108,12 +109,21 @@ export default class DebugComponent extends Component<void> {
     }
 
     protected removeGameObject(obj: Container) {
-        document.getElementById(this.getObjectId(obj)).remove();
+        const elem = document.getElementById(this.getObjectId(obj));
+        const parent = elem.parentElement;
+        elem.remove();
+        if(parent.childElementCount === 0) {
+            parent.remove();
+        }
     }
 
     protected addComponent(cmp: Component<any>, obj: Container) {
         if (document.getElementById(this.getObjectId(obj)) === null) {
             this.addGameObject(obj);
+        }
+        if (document.getElementById(this.getComponentId(cmp)) !== null) {
+            // don't add it twice
+            return;
         }
         let cmpSection = document.getElementById(this.getComponentSectionId(obj));
         let cmpList = document.createElement('li');
@@ -175,8 +185,11 @@ export default class DebugComponent extends Component<void> {
         }
 
         // prevent key down as we don't want to scroll while playing the game
-        document.onkeydown = (evt) => evt.preventDefault();
-
+        document.onkeydown = (evt) => {
+            if([Keys.KEY_LEFT, Keys.KEY_RIGHT, Keys.KEY_UP, Keys.KEY_DOWN].indexOf(evt.keyCode) !== -1) {
+                evt.preventDefault();
+            }
+        };
         let debugElem = document.getElementById('debug');
         if (!debugElem) {
             debugElem = document.createElement('div');

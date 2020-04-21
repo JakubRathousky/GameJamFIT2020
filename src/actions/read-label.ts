@@ -1,4 +1,3 @@
-import { PersonState } from './../components/controllers/person-controller';
 import * as ECSA from '../../libs/pixi-component';
 import { PersonController } from '../components/controllers/person-controller';
 import { DialogController } from '../components/controllers/dialog-controller';
@@ -7,16 +6,18 @@ import { ResourceStorage } from '../services/resource-storage';
 /**
  * Player reads a label/info/whatever
  */
-export const readLabelAction = (scene: ECSA.Scene, resource: ResourceStorage, fontName: string, text: string,
-    interactingPerson: PersonController) => {
+export const readLabelAction = (props: {
+    resource: ResourceStorage;
+    fontName: string;
+    text: string;
+    interactingPerson: PersonController;
+}): ECSA.ChainComponent => {
+    const { resource, fontName, text, interactingPerson } = props;
 
-    const dlg = new DialogController({ fontName, text, gameConfig: resource.gameConfig });
+    const dlg = new DialogController({ fontName, text, gameConfig: resource.gameConfig, isPlayer: true });
 
-    const cmp = new ECSA.ChainComponent()
-        .execute(() => interactingPerson.setState(PersonState.INTERACTING))
+    return new ECSA.ChainComponent('ReadLabel')
+        .call(() => interactingPerson.blockInput())
         .addComponentAndWait(dlg)
-        .execute(() => interactingPerson.setState(PersonState.STANDING));
-
-    scene.stage.addComponentAndRun(cmp);
-    return cmp;
+        .call(() => interactingPerson.unblockInput());
 };

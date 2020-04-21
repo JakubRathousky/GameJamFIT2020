@@ -12,8 +12,7 @@ export enum PersonState {
     TRYING_TO_WALK = 2,
     WALKING = 3,
     TRYING_TO_INTERACT = 4,
-    INTERACTING = 5,
-    CUTSCENE = 6,
+    BLOCKED = 5,
 }
 
 export interface PersonControllerProps {
@@ -68,6 +67,26 @@ export class PersonController extends BaseComponent<PersonControllerProps> {
         return this.owner.stateId as PersonState;
     }
 
+    blockInput() {
+        this.setState(PersonState.BLOCKED);
+    }
+
+    unblockInput() {
+        this.setState(PersonState.STANDING);
+    }
+
+    hide() {
+        this.owner.visible = false;
+    }
+
+    unhide() {
+        this.owner.visible = true;
+    }
+
+    removeFromScene() {
+        this.owner.detachAndDestroy();
+    }
+
     setState(state: PersonState) {
         this.owner.stateId = state;
         this.sendMessage(Messages.PERSON_STATE_CHANGED);
@@ -94,18 +113,43 @@ export class PersonController extends BaseComponent<PersonControllerProps> {
         }
     }
 
-
     teleport(newPos: ECSA.Vector) {
         this.mapController.setCellOccupied(this.mapPosition, false);
         this.mapPosition = newPos;
         this.mapController.setCellOccupied(this.mapPosition, true);
     }
 
+    performMultiWalk(directions: ECSA.Vector[]): ChainComponent {
+        let currentIndex = 0;
+
+        return new ChainComponent('MultiWalk')
+            .beginWhile(() => currentIndex < directions.length)
+            .call(() => this.prepareForWalking(directions[currentIndex]))
+            .addComponentAndWait(() =>
+                walkingAction({
+                    person: this,
+                    position: this.mapPosition,
+                    direction: directions[currentIndex],
+                    tileSize: this.mapController.tileSize,
+                    walkSpeed: this.resourceStorage.gameConfig.playerWalkSpeed})
+            )
+            .call(() => currentIndex++)
+            .endWhile()
+            .executeUpon(this.owner)
+        ;
+    }
+
     performWalk(direction: ECSA.Vector, force = false): ChainComponent {
         this.prepareForWalking(direction);
 
         if(force || this.state === PersonState.TRYING_TO_WALK) {
-            return walkingAction(this, this.mapPosition, this.direction, this.mapController.tileSize, this.resourceStorage.gameConfig.playerWalkSpeed);
+            return walkingAction({
+                person: this,
+                position: this.mapPosition,
+                direction: this.direction,
+                tileSize: this.mapController.tileSize,
+                walkSpeed: this.resourceStorage.gameConfig.playerWalkSpeed})
+                .executeUpon(this.owner);
         }
         return null;
     }

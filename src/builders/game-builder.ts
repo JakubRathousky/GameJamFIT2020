@@ -7,6 +7,8 @@ import { isMobileDevice } from '../../libs/pixi-component/utils/functions';
 import { GameController } from '../components/controllers/game-controller';
 import { introAction } from '../actions/intro';
 import DebugComponent from '../../libs/pixi-component/components/debug-component';
+import { sceneSwitchAction } from '../actions/scene-switch';
+import { sceneFadeAction } from '../actions/scene-fade';
 
 const build = (props: {
     name: MapNames; scene: ECSA.Scene; resources: ResourceStorage;
@@ -41,7 +43,8 @@ const build = (props: {
 
 
     scene.stage.addChild(new ECSA.Container(SceneObjects.LAYER_HUD));
-    scene.stage.addChild(new ECSA.Container(SceneObjects.LAYER_VIEWPORT));
+    const viewPort = new ECSA.Container(SceneObjects.LAYER_VIEWPORT);
+    scene.stage.addChild(viewPort);
 
     // build main game controller
     const gameController = new GameController(resources.gameConfig);
@@ -50,9 +53,10 @@ const build = (props: {
     // build scene
     const playerDefaultPos = resources.getMap(name).playerDefaultPos;
     // first dialogue
-    introAction(scene, resources).execute(() => {
-        gameController.switchMap(name, playerDefaultPos, down);
-    });
+    introAction({scene, resources})
+        .mergeWith(sceneSwitchAction({name, scene, resources, playerPosition: playerDefaultPos, playerDirection: down, unblockPlayer: true}))
+        .mergeWith(sceneFadeAction({scene, fadeIn: true}))
+        .executeUpon(scene.stage);
 };
 
 export default {

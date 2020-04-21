@@ -49,6 +49,18 @@
             {
                 "key": "dude_text_5",
                 "text": "There is nothing to tell... go to hell"
+            },
+            {
+                "key": "gil_text_1",
+                "text": "Good mooooorning, lad! Have you seen any plushy parrots around? I need to get some."
+            },
+            {
+                "key": "gil_text_2",
+                "text": "No? Not a single one?"
+            },
+            {
+                "key": "gil_text_3",
+                "text": "Hmm... fuck me! Nevermind. Cheers!"
             }
         ]
     }

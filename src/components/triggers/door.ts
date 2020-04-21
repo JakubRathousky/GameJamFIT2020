@@ -1,8 +1,10 @@
 import { BaseTrigger, BaseTriggerProps } from './base-trigger';
-import { MapNames, up, down, left, right } from '../../entities/constants';
+import { MapNames, up, down, left, right, Messages } from '../../entities/constants';
 import * as ECSA from '../../../libs/pixi-component';
 import { enterDoorAction } from '../../actions/enter-door';
-import { sceneExitAction } from '../../actions/scene-exit';
+import { playerControllerSelector } from '../../services/selectors';
+import { MapChangeMessage } from '../../entities/messages/map-change-message';
+import { sceneSwitchWithFadeAction } from '../../actions/scene-switch-with-fade';
 
 interface DoorProps extends BaseTriggerProps {
     targetMap: MapNames;
@@ -17,8 +19,9 @@ interface DoorProps extends BaseTriggerProps {
 export class Door extends BaseTrigger<DoorProps> {
 
     execute() {
+        const playerCtrl = playerControllerSelector(this.scene);
         // direction of the player when entering a new scene
-        let finalDirection = this.playerCtrl.direction;
+        let finalDirection = playerCtrl.direction;
 
         if (this.props.targetDirection === 'up') {
             finalDirection = up;
@@ -30,16 +33,27 @@ export class Door extends BaseTrigger<DoorProps> {
             finalDirection = right;
         }
 
-        if (!this.props.animate) {
-            sceneExitAction(this.scene, this.playerCtrl)
-                .execute(() => this.gameCtrl.switchMap(this.props.targetMap, new ECSA.Vector(this.props.targetPosition), finalDirection));
-            return;
-        } else {
-            const doorPosition = [this.playerCtrl.nextPosition, this.playerCtrl.nextPosition.add(this.playerCtrl.direction)];
+        const doorEnterInfo: MapChangeMessage = {
+            sourceMap: this.gameCtrl.currentMap,
+            targetMap: this.props.targetMap
+        };
 
-            enterDoorAction(this.scene, this.resourceStorage, this.playerCtrl, doorPosition)
-                .waitForFinish(() => sceneExitAction(this.scene, this.playerCtrl))
-                .execute(() => this.gameCtrl.switchMap(this.props.targetMap, new ECSA.Vector(this.props.targetPosition), finalDirection));
+        const sceneSwitchProps = {name: this.props.targetMap, scene: this.scene, resources: this.resourceStorage,
+            playerPosition: new ECSA.Vector(this.props.targetPosition), playerDirection: finalDirection, unblockPlayer: false};
+
+        if (!this.props.animate) {
+            sceneSwitchWithFadeAction(sceneSwitchProps)
+                .call(() => playerControllerSelector(this.scene).unblockInput())
+                .sendMessageDelayed(Messages.PLAYER_CHANGED_MAP, doorEnterInfo)
+                .executeUpon(this.scene.stage);
+        } else {
+            const doorPosition = [playerCtrl.nextPosition, playerCtrl.nextPosition.add(playerCtrl.direction)];
+
+            enterDoorAction({scene: this.scene, person: playerCtrl, doorTilePos: doorPosition})
+                .mergeWith(sceneSwitchWithFadeAction(sceneSwitchProps))
+                .call(() => playerControllerSelector(this.scene).unblockInput())
+                .sendMessageDelayed(Messages.PLAYER_CHANGED_MAP, doorEnterInfo)
+                .executeUpon(this.scene.stage);
         }
     }
 }
